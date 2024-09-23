@@ -3,9 +3,9 @@ import { AuthModel } from "./auth.model";
 import jwt from "jsonwebtoken";
 
 export const AuthLogin = async (req: Request, res: Response) => {
-    console.log(req.body);
+    console.log(req.body.formValues);
     try {
-        const { email, password } = req.body;
+        const { email, password } = req.body.formValues;
         if (!email || !password) {
             return res.status(400).send("Email and Password are required");
         }
@@ -24,7 +24,8 @@ export const AuthLogin = async (req: Request, res: Response) => {
         return res.status(200).json({
             token: token,
             user: user,
-            status: "success"
+            status: "success",
+            message: "Logged in successfully",
         });
 
 
@@ -60,21 +61,21 @@ export const AuthRegister = async (req: Request, res: Response) => {
     }
 }
 
-
 export const AuthLogOut = async (req: Request, res: Response) => {
     try {
-      // clear refreshToken
-      res.clearCookie("accessToken", { path: "/"});
-  
-      // clear refreshToken
+      // Clear access token and refresh token
+      res.clearCookie("accessToken", { path: "/" });
       res.clearCookie("refreshToken", { path: "/" });
-      // res.clearCookie("refreshToken", { path: "/api/auth/refreshToken" });
+  
       res.status(200).json({
         status: "success",
         message: "Logged out successfully",
       });
     } catch (error) {
-        res.status(500).send(error);
+      res.status(500).send({
+        status: "error",
+        message: "Failed to log out",
+      });
     }
   };
-
+  

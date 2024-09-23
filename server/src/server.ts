@@ -23,7 +23,7 @@ cloudinary.config({
 
 const app: Express = express();
 const corsOptions: cors.CorsOptions = {
-  origin: process.env.FRONT_UTL || "http://localhost:5173",
+  origin: process.env.FRONT_UTL || "https://client.developingmode.online",
   credentials: true
 };
 

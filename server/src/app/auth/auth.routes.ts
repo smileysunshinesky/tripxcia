@@ -4,7 +4,7 @@ import { AuthLogin, AuthRegister, AuthLogOut } from "./auth.controller";
 
 const app = Router();
 
-app.post('/login', AuthLogin);
+app.post('/signIn', AuthLogin);
 app.post('/register', AuthRegister);
 app.post('/logout', AuthLogOut);
 

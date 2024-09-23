@@ -5,5 +5,5 @@ const express_1 = require("express");
 const auth_controller_1 = require("./auth.controller");
 const app = (0, express_1.Router)();
 exports.AuthRoutes = app;
-app.post('/login', auth_controller_1.AuthLogin);
+app.post('/signIn', auth_controller_1.AuthLogin);
 app.post('/register', auth_controller_1.AuthRegister);

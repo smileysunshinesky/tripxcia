@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { QueryModel } from "./query.model";
+import { ObjectId } from 'mongodb';
 
 export const FlightQueryfirstStep =async(req:Request,res:Response)=>{
     try {
@@ -20,9 +21,7 @@ export const FlightQueryfirstStep =async(req:Request,res:Response)=>{
             bookingDate:formattedDate,
             status:0,
         });
-        console.log(query)
         await query.save().then((result)=>{
-            console.log(result)
             return res.status(200).json({message:"Query Saved Successfully",result:result});
         }).catch((error)=>{
             console.log(error)
@@ -236,39 +235,51 @@ export const HotelQueryDup=async(req:Request,res:Response)=>{
     }
 }
 
-export const FlightQueryConfirmed=async(req:any,res:Response)=>{
+export const FlightQueryConfirmed = async (req: any, res: Response) => {
+    console.log("queryConfirm");
+  
     try {
-        const queryId=req.params.id;
-        
-        const imageUrl = req.file.path;  // URL of the uploaded image
-        
-        await QueryModel.findOneAndUpdate({_id:queryId},{
-            passengerName:req.body.passengerName,
-            gender:req.body.gender,
-            pnrNumber:req.body.pnrNumber,
-            seatNumber:req.body.seatNumber,
-            class:req.body.class,
-            meal:req.body.meal,
-            invoiceNumber:req.body.invoiceNumber,
-            hotelImage:imageUrl,
-            vendorName:req.body.vendorName,
-            confirmed:req.body.confirmedQuery,
-            status:1,
-
-        })
-        .then((result)=>{
-            console.log(result)
-            return res.status(200).json({message:"Query Saved Successfully",result:result});
-        }).catch((error)=>{
-            console.log(error)
-            return res.status(500).json({message:error});
-        });
-        
-
+      const queryId = req.params.id;
+  
+      if (!ObjectId.isValid(queryId)) {
+        return res.status(400).json({ message: "Invalid query ID" });
+      }
+  
+      const imageUrl = req.file?.path || '';  // URL of the uploaded image or empty string if not provided
+      console.log(queryId);
+  
+      const updateData = {
+        passengerName: req.body.passengerName,
+        gender: req.body.gender,
+        pnrNumber: req.body.pnrNumber,
+        seatNumber: req.body.seatNumber,
+        class: req.body.class,
+        meal: req.body.meal,
+        invoiceNumber: req.body.invoiceNumber,
+        hotelImage: imageUrl, // Handle image URL properly
+        vendorName: req.body.vendorName,
+        confirmed: req.body.confirmedQuery,
+        status: 1,
+      };
+  
+      const result = await QueryModel.findOneAndUpdate(
+        { _id: new ObjectId(queryId) }, // Ensure queryId is converted to ObjectId
+        updateData,
+        { new: true } // Return the updated document
+      );
+  
+      if (!result) {
+        return res.status(404).json({ message: "Query not found" });
+      }
+  
+      console.log(result);
+      return res.status(200).json({ message: "Query Saved Successfully", result });
+  
     } catch (error) {
-        return res.status(500).json({message:error});
+      console.error("Error updating query:", error);
+      return res.status(500).json({ message: "An error occurred while saving the query", error });
     }
-}
+  };
 
 
 export const CabQueryConfirmed=async(req:Request,res:Response)=>{

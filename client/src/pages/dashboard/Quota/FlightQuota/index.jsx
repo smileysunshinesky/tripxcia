@@ -28,7 +28,7 @@ export default function FlightQuota() {
   const [isOpen,setIsOpen]=useState(false);
 const navigate=useNavigate();
 const selector=useSelector(state=>state);
-const token="Bearer "+localStorage.getItem('token');
+const token=localStorage.getItem('token');
 const fetchFlightQuery=async()=>{
   try {
       await makeRequest({
@@ -49,7 +49,7 @@ const fetchFlightQuery=async()=>{
           if (error.response && error.response.status === 403) {
               toast.error('Token expired');
           } else {
-              return navigate('/auth/signin')  
+              return navigate('/auth/signIn')  
           }
       })
 

@@ -27,7 +27,7 @@ export function Auth() {
     },
     {
       name: "sign in",
-      path: "/auth/sign-in",
+      path: "/auth/signIn",
       icon: ArrowRightOnRectangleIcon,
     },
   ];

@@ -3,7 +3,10 @@ import { GetClients, GetFlightQueries, GetVendors,AuthLoginAPI, getAllQueries } 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import { updateUser } from "../redux/reducers/userReducer"; 
+import { updateUser } from "@/redux/reducers/userReducer";
+import { getAllClients } from "@/redux/actions/clientActions";
+import { useDispatch, useSelector } from "react-redux";
+import { LogoutUser } from "@/redux/actions/authActions";
 
 // Create a new context for the global data
 const GlobalDataContext = createContext();
@@ -13,27 +16,41 @@ export const useGlobalData = () => useContext(GlobalDataContext);
 
 // Global data provider component
 export const GlobalDataProvider = ({ children }) => {
+    const dispatch = useDispatch();
     const [user,setuser]=useState(null);
     const [FlightQuery, setFlightQuery] = useState([]);
-    const [clients, setclients] = useState([]);
+    const { clients } = useSelector((state) => state.client);
+
     const [vendors, setvendors] = useState([]);
     const [queries, setqueries] = useState([]);
     const navigate=useNavigate();
-    const token="Bearer "+localStorage.getItem('token')
-    useEffect(()=>{
-        fetchFlightQuery();
-        fetchClients();
-        fetchVendors();
-        fetchAllQueries();
+    const token=localStorage.getItem('token')
 
-    },[])
+    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+    useEffect(()=>{
+        if(isLoggedIn) {
+            fetchFlightQuery();
+            fetchClients();
+            fetchVendors();
+            fetchAllQueries();
+        } else {
+            console.log(isLoggedIn)
+            try {
+                // Dispatch the logout action and wait for it to complete
+                dispatch(LogoutUser());
+              } catch (error) {
+                console.error("Error during logout: ", error);
+                // Optionally show an error message in the UI
+              }
+        }
+    },[dispatch])
     const fetchFlightQueryById=(id)=>{
         try {
           const Query=queries.find((query)=>query._id===id);
             return Query;
         } catch (error) {
             toast.error('Error fetching flight query')
-            return navigate('/auth/signin')
+            return navigate('/auth/signIn')
 
         }
     }
@@ -59,7 +76,7 @@ export const GlobalDataProvider = ({ children }) => {
                 if (error.response && error.response.status === 403) {
                     toast.error('Token expired');
                 } else {
-                    return navigate('/auth/signin')  
+                    return navigate('/auth/signIn')  
                 }
             })
 
@@ -69,38 +86,38 @@ export const GlobalDataProvider = ({ children }) => {
         }
 
     };
-    const fetchClients=async()=>{
+    const fetchClients = async () => {
         try {
-            await makeRequest({
-                url:GetClients,
-                method:'GET',
-                headers:{
-                    'Content-Type':'application/json',
-                    'Authorization':token
+            const response = await makeRequest({
+                url: GetClients,
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token
                 }
+                });
 
-            })
-            .then((response)=>{
-                console.log(response)
-                setclients(response.result)
-            }
-            )
-            .catch((error)=>{
-                if (error.response && error.response.status === 403) {
-                    toast.error('Token expired');
+                const clientsData = response.result || [];  // Fallback to different keys if result doesn't exist
+
+                console.log('Clients data:', clientsData);  // Log to confirm the extracted clients data
+
+                // Dispatch the action only if data exists
+                if (clientsData.length) {
+                    dispatch(getAllClients(clientsData));
                 } else {
-                    return navigate('/auth/signin')           
+                    console.warn('No clients data found in response.');
                 }
-            })
-
             
         } catch (error) {
+            if (error.response && error.response.status === 403) {
+            toast.error('Token expired');
+            } else {
             toast.error('Error fetching flight query');
-            return navigate('/auth/signin');
-
+            navigate('/auth/signIn');
+            }
         }
-
     };
+      
     const fetchVendors=async()=>{
         try {
             await makeRequest({
@@ -121,13 +138,13 @@ export const GlobalDataProvider = ({ children }) => {
                 if (error.response && error.response.status === 403) {
                     toast.error('Token expired');
                 } else {
-return navigate('/auth/signin')           }
+return navigate('/auth/signIn')           }
             })
 
             
         } catch (error) {
             toast.error('Error fetching flight query')
-            return navigate('/auth/signin')
+            return navigate('/auth/signIn')
 
         }
 
@@ -152,14 +169,14 @@ return navigate('/auth/signin')           }
                 if (error.response && error.response.status === 403) {
                     toast.error('Token expired');
                 } else {
-                    return navigate('/auth/signin')  
+                    return navigate('/auth/signIn')  
                 }
             })
 
             
         } catch (error) {
             toast.error('Error fetching flight query')
-            return navigate('/auth/signin')
+            return navigate('/auth/signIn')
 
         }
             
@@ -181,20 +198,20 @@ return navigate('/auth/signin')           }
             .then((response)=>{
                 console.log(response)
                 setuser(response);
-                updateUser(response);
+                dispatch(updateUser(response));
                 localStorage.setItem('token',response.token)
                 return navigate('/dashboard/home')
             })
             .catch((error)=>{
                 toast.error('Invalid Credentials')
-                return navigate('/auth/signin')
+                return navigate('/auth/signIn')
 
             })
 
            
         } catch (error) {
             toast.error('Invalid Credentials')
-            return navigate('/auth/signin')
+            return navigate('/auth/signIn')
 
         }
 

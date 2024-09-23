@@ -2,33 +2,37 @@ import { useGlobalData } from "@/hooks/GlobalData";
 import {
   Card,
   Input,
-  Checkbox,
   Button,
   Typography,
 } from "@material-tailwind/react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { LoginUser } from "../../redux/actions/authActions";
+import { useNavigate } from "react-router-dom";
+
 export function SignIn() {
 
+  console.log("signIn")
+
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const {AuthLogin}=useGlobalData();
-  const [data,setdata]=useState({
-    email:'',
-    password:''
+  const [data, setData] = useState({
+    email: '',
+    password: ''
   });
-  const handleChange=(e)=>{
-    setdata({...data,[e.target.name]:e.target.value})
-  }
 
-  const onSubmit = async (data) => {
-    console.log(data)
+  const handleChange = (e) => {
+    setData({ ...data, [e.target.name]: e.target.value });
+  };
+
+  const onSubmit = () => {
     try {
       dispatch(LoginUser(data));
+      navigate("/dashboard/home");
     } catch (error) {
-      console.log(error);
+      console.error("Error during signIn: ", error);
+      // Optionally show some error message in UI
     }
   };
   

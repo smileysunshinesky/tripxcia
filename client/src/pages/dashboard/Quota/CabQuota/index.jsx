@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
 export default function CabQuota() {
   const [isOpen,setIsOpen]=useState(false);
   const [selectedRow,setSelectedRow]=useState(null);
-  const token="Bearer "+localStorage.getItem('token');
+  const token=localStorage.getItem('token');
   const navigate = useNavigate();
   const [queries,setqueries] = useState([]);
   const fetchCabQuery = async()=>{
@@ -36,12 +36,12 @@ export default function CabQuota() {
               if (error.response && error.response.status === 403) {
                   toast.error('Token expired');
               } else {
-                  return navigate('/auth/signin')  
+                  return navigate('/auth/signIn')  
               }
           }) 
       } catch (error) {
           toast.error('Error fetching cab query')
-          return navigate('/auth/signin')
+          return navigate('/auth/signIn')
       }
   }
   useEffect(()=>{

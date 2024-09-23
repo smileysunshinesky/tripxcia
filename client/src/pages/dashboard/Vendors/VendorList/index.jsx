@@ -17,7 +17,7 @@ import { DeleteClient, GetVendors } from '@/data/apis';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 export default function VendorList() {
-  const token="Bearer "+localStorage.getItem('token')
+  const token=localStorage.getItem('token')
   const navigate = useNavigate();
   const [vendors,setvendors] = useState([]);
   const fetchVendors=async()=>{
@@ -40,12 +40,12 @@ export default function VendorList() {
             if (error.response && error.response.status === 403) {
                 toast.error('Token expired');
             } else {
-  return navigate('/auth/signin')           }
+  return navigate('/auth/signIn')           }
         })
         
     } catch (error) {
         toast.error('Error fetching flight query')
-        return navigate('/auth/signin')
+        return navigate('/auth/signIn')
     }
 };
 

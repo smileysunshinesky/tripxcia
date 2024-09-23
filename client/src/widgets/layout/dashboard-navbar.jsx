@@ -26,6 +26,7 @@ import {
   setOpenSidenav,
 } from "@/context";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { LogoutUser } from "../../redux/actions/authActions";
 
 
@@ -35,7 +36,20 @@ export function DashboardNavbar() {
   const { pathname } = useLocation();
   const [layout, page] = pathname.split("/").filter((el) => el !== "");
 
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const dispatch1 = useDispatch();
+  const navigate = useNavigate(); // To redirect after logout
+
+  const handleLogout = () => {
+    try {
+      // Dispatch the logout action and wait for it to complete
+      dispatch1(LogoutUser());
+      
+    } catch (error) {
+      console.error("Error during logout: ", error);
+      // Optionally show an error message in the UI
+    }
+  };
 
   return (
     <Navbar
@@ -88,30 +102,48 @@ export function DashboardNavbar() {
           >
             <Bars3Icon strokeWidth={3} className="h-6 w-6 text-blue-gray-500" />
           </IconButton>
-          <Link to="/auth/sign-in">
-            <Button
-              variant="text"
-              color="blue-gray"
-              className="hidden items-center gap-1 px-4 xl:flex normal-case"
-            >
-              <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
-              Sign In
-            </Button>
-            <Button
-              variant="text"
-              color="blue-gray"
-              className="hidden items-center gap-1 px-4 xl:flex normal-case"
-              onClick={() => dispatch1(LogoutUser())}
-            >
-              Log Out
-            </Button>
-            <IconButton
-              variant="text"
-              color="blue-gray"
-              className="grid xl:hidden"
-            >
-              <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
-            </IconButton>
+          <Link to={isLoggedIn ? "#" : "/auth/signIn"}>
+          {isLoggedIn ? (
+            <>
+              <Button
+                variant="text"
+                color="blue-gray"
+                className="hidden items-center gap-1 px-4 xl:flex normal-case"
+                onClick={handleLogout} // Call the async logout function
+              >
+                <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
+                Log Out
+              </Button>
+
+              <IconButton
+                variant="text"
+                color="blue-gray"
+                className="grid xl:hidden"
+                onClick={handleLogout} // Call the async logout function for the mobile icon button
+              >
+                <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
+              </IconButton>
+            </>
+            ) : (
+              <>
+                <Button
+                  variant="text"
+                  color="blue-gray"
+                  className="hidden items-center gap-1 px-4 xl:flex normal-case"
+                >
+                  <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
+                  Sign In
+                </Button>
+
+                <IconButton
+                  variant="text"
+                  color="blue-gray"
+                  className="grid xl:hidden"
+                >
+                  <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
+                </IconButton>
+              </>
+            )}
           </Link>
           <Menu>
             <MenuHandler>

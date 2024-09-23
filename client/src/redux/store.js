@@ -6,7 +6,7 @@ import {
 import { persistStore, persistReducer } from "redux-persist";
 import { rootPersistConfig, rootReducer } from "./rootReducer.js";
 
-const isProduction = import.meta.env.REACT_APP_NODE !== "local";
+const isProduction = import.meta.env.VITE_NODE !== "local";
 
 // If it's production, exclude Redux DevTools Extension
 const devToolsOptions = {

@@ -27,7 +27,7 @@ export default function QueryList() {
   const navigate=useNavigate();
   const [queries,setqueries] = useState([]);
 
-  const token="Bearer "+localStorage.getItem('token');
+  const token=localStorage.getItem('token');
 
   const fetchAllQueries=async()=>{
     try {
@@ -49,14 +49,14 @@ export default function QueryList() {
             if (error.response && error.response.status === 403) {
                 toast.error('Token expired');
             } else {
-                return navigate('/auth/signin')  
+                return navigate('/auth/signIn')  
             }
         })
 
         
     } catch (error) {
         toast.error('Error fetching flight query')
-        return navigate('/auth/signin')
+        return navigate('/auth/signIn')
 
     }
         

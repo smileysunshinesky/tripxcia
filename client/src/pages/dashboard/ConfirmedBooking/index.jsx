@@ -29,7 +29,7 @@ export default function ConfirmedBooking() {
 const navigate=useNavigate();
 const selector=useSelector(state=>state);
 
-const token="Bearer "+localStorage.getItem('token');
+const token=localStorage.getItem('token');
 
   const fetchAllQueries=async()=>{
     try {
@@ -51,14 +51,14 @@ const token="Bearer "+localStorage.getItem('token');
             if (error.response && error.response.status === 403) {
                 toast.error('Token expired');
             } else {
-                return navigate('/auth/signin')  
+                return navigate('/auth/signIn')  
             }
         })
 
         
     } catch (error) {
         toast.error('Error fetching flight query')
-        return navigate('/auth/signin')
+        return navigate('/auth/signIn')
 
     }
         

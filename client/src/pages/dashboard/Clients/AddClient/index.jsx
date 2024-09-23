@@ -150,15 +150,14 @@ export default function AddClient() {
           
          }}>
           <Grid templateColumns={'repeat(3, 1fr)'} gap={4}>
-        
-          {form.map((item)=>(
-              <FormControl>
+            {form.map((item) => (
+              <FormControl key={item.id}>
                 <FormLabel>{item.label}</FormLabel>
-                <Input placeholder={'Enter '+item.label} id={item.id} type={item.type} required={item.required} />
+                <Input placeholder={'Enter ' + item.label} id={item.id} type={item.type} required={item.required} />
               </FormControl>
             ))}
-           
           </Grid>
+
           <FormControl py={5}>
               <Button type="submit" colorScheme="blue">Register</Button>
             </FormControl>

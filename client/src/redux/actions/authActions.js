@@ -1,89 +1,71 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-import { ShowSnackbar, logout, updateUser } from "../reducers/userReducer"; 
-
+import { ShowSnackbar, logout, updateUser } from "../reducers/userReducer";
+import toast from 'react-hot-toast';
 import axios from "../../utils/axios.js";
 
 // ------------- Login Thunk -------------
 export const LoginUser = createAsyncThunk(
-  "auth/login",
+  "auth/signIn",
   async (formValues, { rejectWithValue, dispatch }) => {
-    console.log(formValues);
     try {
-      // generate recaptcha token
-      // const recaptchaToken = await recaptchaRef.current.executeAsync();
-
-      const { data } = await axios.post("/auth/login", {
+      // API call to signIn
+      const { data } = await axios.post("/auth/signIn", {
         formValues,
-        // recaptchaToken,
       });
 
-      // show snackbar
-      dispatch(
-        ShowSnackbar({
-          severity: data.status,
-          message: data.message,
-        })
-      );
+      toast.success(data.message);
 
-      // if user is not verified
+      // If user is not verified
       if (!data.user) {
+        return rejectWithValue({ message: "User not verified" });
       } else {
-        // update user data
+        // Save token to local storage and update user state
+        localStorage.setItem('token', `Bearer ${data.user.token}`);
         dispatch(updateUser(data.user));
       }
 
       return data;
     } catch (error) {
-      console.log(error)
-      toast.error('Invalid Credentials')
-      return navigate('/auth/signin')
-      // dispatch(
-      //   ShowSnackbar({
-      //     severity: error.error.status,
-      //     message: error.error.message,
-      //   })
-      // );
-      // return rejectWithValue(error.error);
+      console.error("Login error: ", error);
+      // Show toast or dispatch error-related actions
+      return rejectWithValue(error.response.data || { message: "Invalid Credentials" });
     }
   }
 );
 
+
 // ------------- Logout Thunk -------------
 export const LogoutUser = createAsyncThunk(
   "auth/logout",
-  async (arg, { rejectWithValue, dispatch }) => {
-    return new Promise(async (resolve) => {
-      try {
-        const { data } = await axios.post("/auth/logout");
+  async (_, { rejectWithValue, dispatch }) => {
+    try {
+      const { data } = await axios.post("/auth/logout");
 
-        dispatch(logout());
-        socket.disconnect();
-        
-        // show snackbar
-        dispatch(
-          ShowSnackbar({
-            severity: data.status,
-            message: data.message,
-          })
-        );
-        
-        // Resolve the promise to indicate that the operation is complete
-        resolve();
-      } catch (error) {
-        dispatch(logout());
-        // dispatch(
-        //   ShowSnackbar({
-        //     severity: error?.error?.status || "error",
-        //     message: error?.error?.message || "logout failed",
-        //   })
-        // );
+      // Clear local user data
+      dispatch(logout());
+      
+      // Display success message
+      toast.success(data.message || "Logged out successfully");
 
-        return rejectWithValue(error);
-      }
-    });
+      // Remove token from localStorage
+      localStorage.removeItem("token");
+
+      // Redirect the user only once
+      window.location.href = '/auth/signIn'; // Full page reload to login page
+
+    } catch (error) {
+      // In case of an error, still clear user state
+      dispatch(logout());
+
+      // Show error message
+      toast.error(error.response?.data?.message || "Logout failed");
+
+      return rejectWithValue(error.response?.data || error);
+    }
   }
 );
+
 
 // ------------- Register Thunk -------------
 export const RegisterUser = createAsyncThunk(
@@ -97,67 +79,16 @@ export const RegisterUser = createAsyncThunk(
       const { data } = await axios.post("/auth/useradd", {
         ...formValues,
       });
-
-      // show snackbar
-      dispatch(
-        ShowSnackbar({
-          severity: data.status,
-          message: data.message,
-        })
-      );
+      toast.success(data.message);
 
       return data;
     } catch (error) {
-      dispatch(
-        ShowSnackbar({
-          severity: error.error.status,
-          message: error.error.message,
-        })
-      );
+      toast.error(data.message);
       return rejectWithValue(error.error);
     }
   }
 );
 
-// ------------- Verify OTP Thunk -------------
-export const VerifyOTP = createAsyncThunk(
-  "auth/verify-otp",
-  async (
-    { recaptchaRef, ...formValues },
-    { rejectWithValue, dispatch, getState }
-  ) => {
-    try {
-      // generate recaptcha token
-      const recaptchaToken = await recaptchaRef.current.executeAsync();
-
-      const { data } = await axios.post("/auth/verify-otp", {
-        ...formValues,
-        recaptchaToken,
-      });
-
-      // update user data
-      dispatch(updateUser(data.user));
-
-      // show snackbar
-      dispatch(
-        ShowSnackbar({
-          severity: data.status,
-          message: data.message,
-        })
-      );
-
-      return data;
-    } catch (error) {
-      dispatch(
-        ShowSnackbar({
-          severity: error.error.status,
-          message: error.error.message,
-        })
-      );
-      return rejectWithValue(error.error);
-    }
-  }
-);
 
 // ------------- Forgot Password Thunk -------------
 export const ForgotPassword = createAsyncThunk(
@@ -245,122 +176,6 @@ export const RefreshToken = createAsyncThunk(
 
       return data;
     } catch (error) {
-      return rejectWithValue(error.error);
-    }
-  }
-);
-
-// ------------- Start Server Thunk -------------
-export const StartServer = createAsyncThunk(
-  "start/server",
-  async (arg, { rejectWithValue, dispatch }) => {
-    try {
-      await axios.get("/start-server");
-    } catch (error) {
-      console.log(error);
-      dispatch(
-        ShowSnackbar({
-          severity: error.error.status,
-          message: error.error.message,
-        })
-      );
-      return rejectWithValue(error);
-    }
-  }
-);
-
-// ------------- Google Login Thunk -------------
-export const GoogleLogin = createAsyncThunk(
-  "auth/google",
-  async (token, { rejectWithValue, dispatch }) => {
-    try {
-      const { data } = await axios.post("/auth/google", {
-        code: token.access_token,
-      });
-
-      console.clear();
-
-      // show snackbar
-      dispatch(
-        ShowSnackbar({
-          severity: data.status,
-          message: data.message,
-        })
-      );
-
-      // update user data
-      dispatch(updateUser(data.user));
-
-      return data;
-    } catch (error) {
-      dispatch(
-        ShowSnackbar({
-          severity: error.error.status,
-          message: error.error.message,
-        })
-      );
-      return rejectWithValue(error.error);
-    }
-  }
-);
-
-// ------------- GitHub Login Thunk -------------
-export const GithubLogin = createAsyncThunk(
-  "auth/github",
-  async (code, { rejectWithValue, dispatch }) => {
-    try {
-      const { data } = await axios.post("/auth/github", { code: code });
-
-      // show snackbar
-      dispatch(
-        ShowSnackbar({
-          severity: data.status,
-          message: data.message,
-        })
-      );
-
-      // update user data
-      dispatch(updateUser(data.user));
-
-      return data;
-    } catch (error) {
-      dispatch(
-        ShowSnackbar({
-          severity: error.error.status,
-          message: error.error.message,
-        })
-      );
-      return rejectWithValue(error.error);
-    }
-  }
-);
-
-// ------------- GitHub Login Thunk -------------
-export const LinkedinLogin = createAsyncThunk(
-  "auth/linkedin",
-  async (code, { rejectWithValue, dispatch }) => {
-    try {
-      const { data } = await axios.post("/auth/linkedin", { code: code });
-
-      // show snackbar
-      dispatch(
-        ShowSnackbar({
-          severity: data.status,
-          message: data.message,
-        })
-      );
-
-      // update user data
-      dispatch(updateUser(data.user));
-
-      return data;
-    } catch (error) {
-      dispatch(
-        ShowSnackbar({
-          severity: error.error.status,
-          message: error.error.message,
-        })
-      );
       return rejectWithValue(error.error);
     }
   }

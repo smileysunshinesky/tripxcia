@@ -1,9 +1,9 @@
-// reducers/queryReducer.js
-import { SET_QUERY } from '../actions/setQuery';
+import { SET_QUERY, SET_CURRENT_QUERY } from '../actions/queryActions';
 
 const initialState = {
   type: '',
   query: '',
+  currentQuery: null,
 };
 
 const queryReducer = (state = initialState, action) => {
@@ -12,6 +12,11 @@ const queryReducer = (state = initialState, action) => {
       return {
         ...state,
         ...action.payload, // Update the state with the new query object
+      };
+    case SET_CURRENT_QUERY:
+      return {
+        ...state,
+        currentQuery: action.payload,
       };
     default:
       return state;

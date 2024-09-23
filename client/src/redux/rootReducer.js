@@ -5,6 +5,7 @@ import {
   queryReducer,
 //   contactReducer,
   userReducer,
+  clientReducer
 } from "./reducers";
 
 const rootPersistConfig = {
@@ -20,6 +21,8 @@ const rootReducer = combineReducers({
     auth: authReducer,
     query: queryReducer,
     user: userReducer,
+    client: clientReducer,
+
 //   project: projectReducer,
 //   contact: contactReducer,
 });

@@ -141,13 +141,6 @@ export const routes = [
         element: <GenarateQueryConfirm />,
         hidden:true
       },
-      {
-        icon: <Quote {...icon} />,
-        name: "query-edit",
-        path: "/query-edit/:id",
-        element: <EditQuery />,
-        hidden:true
-      },
  
       {
         icon: <CheckCircle {...icon} />,

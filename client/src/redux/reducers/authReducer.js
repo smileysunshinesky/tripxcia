@@ -8,9 +8,6 @@ import {
   RefreshToken,
   RegisterUser,
   // ResetPassword,
-  // SendOTP,
-  StartServer,
-  // VerifyOTP,
 } from "../actions/authActions";
 
 // initial state for logged in status
@@ -19,38 +16,18 @@ const initialState = {
 
   isLoading: false,
   error: false,
-
-  otpEmail: "",
 };
 
 const slice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    // updating otp email state
-    updateOtpEmail(state, action) {
-      state.otpEmail = action.payload.otpEmail;
-    },
     joinsuccess(state) {
       state.isLoggedIn = true;
     },
   },
   extraReducers(builder) {
     builder
-      // --------- Start Server Builder ---------
-      .addCase(StartServer.pending, (state, action) => {
-        state.isLoading = false;
-        state.error = false;
-      })
-      .addCase(StartServer.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.error = false;
-      })
-      .addCase(StartServer.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = true;
-      })
-
       // --------- Login Builder ---------
       .addCase(LoginUser.pending, handlePending)
       .addCase(LoginUser.fulfilled, handleLoginSuccess)
@@ -75,41 +52,6 @@ const slice = createSlice({
         state.error = false;
       })
       .addCase(RegisterUser.rejected, handleRejected)
-
-      // --------- Verify OTP Builder ---------
-      // .addCase(VerifyOTP.pending, handlePending)
-      // .addCase(VerifyOTP.fulfilled, (state, action) => {
-      //   // check if user is verified
-      //   if (action.payload.user) {
-      //     state.isLoggedIn = true;
-      //     // redirect user to profile
-      //     setTimeout(() => {
-      //       window.location.href = "/profile";
-      //     });
-      //   } else {
-      //     state.isLoggedIn = false;
-      //   }
-      //   state.isLoading = false;
-      //   state.error = false;
-      // })
-      // .addCase(VerifyOTP.rejected, handleRejected)
-
-      // --------- Send OTP Builder ---------
-      // .addCase(SendOTP.pending, handlePending)
-      // .addCase(SendOTP.fulfilled, (state, action) => {
-      //   state.isLoading = false;
-      //   state.error = false;
-      // })
-      // .addCase(SendOTP.rejected, handleRejected)
-
-      // --------- Add Email Builder ---------
-      // .addCase(AddOtpEmail.pending, handlePending)
-      // .addCase(AddOtpEmail.fulfilled, (state, action) => {
-      //   state.isLoading = false;
-      //   state.error = false;
-      // })
-      // .addCase(AddOtpEmail.rejected, handleRejected)
-
       // --------- Forgot Password Builder ---------
       // .addCase(ForgotPassword.pending, handlePending)
       // .addCase(ForgotPassword.fulfilled, (state, action) => {
@@ -159,6 +101,6 @@ function handleLoginSuccess(state, action) {
   state.error = false;
 }
 
-export const { updateOtpEmail, joinsuccess } = slice.actions;
+export const { joinsuccess } = slice.actions;
 
 export default slice.reducer;

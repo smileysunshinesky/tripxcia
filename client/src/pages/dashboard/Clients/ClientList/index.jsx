@@ -24,10 +24,19 @@ import Swal from 'sweetalert2';
 import { FormControl, FormLabel, Grid } from '@chakra-ui/react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { getAllClients } from "@/redux/actions/clientActions";
+import { useDispatch,useSelector } from "react-redux";
+
+
+
 export default function ClientList() {
+  const dispatch = useDispatch();
   const [editOn,setEditOn]=React.useState(false);
   const navigate = useNavigate();
   const [selectedClient,setSelectedClient]=React.useState(null);
+
+  const { clients } = useSelector((state) => state.client);
+
   const form=[
     {
       label:"Name",
@@ -110,41 +119,39 @@ export default function ClientList() {
 
 
   ]
-  const [clients,setclients] = useState([]);
-  const token="Bearer "+localStorage.getItem('token')
+  const token=localStorage.getItem('token')
 
-  const fetchClients=async()=>{
+  const fetchClients = async () => {
     try {
-        await makeRequest({
-            url:GetClients,
-            method:'GET',
-            headers:{
-                'Content-Type':'application/json',
-                'Authorization':token
+        const response = await makeRequest({
+            url: GetClients,
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token
             }
+            });
 
-        })
-        .then((response)=>{
-            console.log(response)
-            setclients(response.result)
-        }
-        )
-        .catch((error)=>{
-            if (error.response && error.response.status === 403) {
-                toast.error('Token expired');
+            const clientsData = response.result || [];  // Fallback to different keys if result doesn't exist
+
+            console.log('Clients data:', clientsData);  // Log to confirm the extracted clients data
+
+            // Dispatch the action only if data exists
+            if (clientsData.length) {
+                dispatch(getAllClients(clientsData));
             } else {
-                return navigate('/auth/signin')           
+                console.warn('No clients data found in response.');
             }
-        })
-
         
     } catch (error) {
+        if (error.response && error.response.status === 403) {
+        toast.error('Token expired');
+        } else {
         toast.error('Error fetching flight query');
-        return navigate('/auth/signin');
-
+        navigate('/auth/signIn');
+        }
     }
-
-};
+  };
 
 useEffect(()=>{
   if(token.length>10){

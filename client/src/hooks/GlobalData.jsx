@@ -3,6 +3,7 @@ import { GetClients, GetFlightQueries, GetVendors,AuthLoginAPI, getAllQueries } 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { updateUser } from "../redux/reducers/userReducer"; 
 
 // Create a new context for the global data
 const GlobalDataContext = createContext();
@@ -171,7 +172,6 @@ return navigate('/auth/signin')           }
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json',
-
                 },
                 data:{
                     email,
@@ -180,7 +180,8 @@ return navigate('/auth/signin')           }
             })
             .then((response)=>{
                 console.log(response)
-                setuser(response)
+                setuser(response);
+                updateUser(response);
                 localStorage.setItem('token',response.token)
                 return navigate('/dashboard/home')
             })

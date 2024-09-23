@@ -23,7 +23,8 @@ cloudinary.config({
 
 const app: Express = express();
 const corsOptions: cors.CorsOptions = {
-  origin: "*",
+  origin: process.env.FRONT_UTL || "http://localhost:5173",
+  credentials: true
 };
 
 const accessLogStream = fs.createWriteStream("log.json", { flags: "a" });
@@ -33,10 +34,10 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 
 app.use('/', Router);
 
 app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}`);
+  console.log(`[server]: Server is running on: ${port}`);
 });

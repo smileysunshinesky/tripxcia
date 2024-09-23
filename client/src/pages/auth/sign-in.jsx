@@ -8,9 +8,12 @@ import {
 } from "@material-tailwind/react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
-
+import { useDispatch, useSelector } from "react-redux";
+import { LoginUser } from "../../redux/actions/authActions";
 export function SignIn() {
+
+  const dispatch = useDispatch();
+
   const {AuthLogin}=useGlobalData();
   const [data,setdata]=useState({
     email:'',
@@ -19,6 +22,15 @@ export function SignIn() {
   const handleChange=(e)=>{
     setdata({...data,[e.target.name]:e.target.value})
   }
+
+  const onSubmit = async (data) => {
+    console.log(data)
+    try {
+      dispatch(LoginUser(data));
+    } catch (error) {
+      console.log(error);
+    }
+  };
   
   return (
     <section className="m-8 flex gap-4 max-h-[100vh] ">
@@ -61,9 +73,7 @@ export function SignIn() {
           </div>
          
           
-          <Button onClick={async()=>{
-           await AuthLogin(data)
-          }} className="mt-6" fullWidth>
+          <Button onClick={async() => onSubmit(data)} className="mt-6" fullWidth>
             Sign In
           </Button>
 

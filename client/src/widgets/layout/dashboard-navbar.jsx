@@ -25,12 +25,17 @@ import {
   setOpenConfigurator,
   setOpenSidenav,
 } from "@/context";
+import { useDispatch, useSelector } from "react-redux";
+import { LogoutUser } from "../../redux/actions/authActions";
+
 
 export function DashboardNavbar() {
   const [controller, dispatch] = useMaterialTailwindController();
   const { fixedNavbar, openSidenav } = controller;
   const { pathname } = useLocation();
   const [layout, page] = pathname.split("/").filter((el) => el !== "");
+
+  const dispatch1 = useDispatch();
 
   return (
     <Navbar
@@ -91,6 +96,14 @@ export function DashboardNavbar() {
             >
               <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
               Sign In
+            </Button>
+            <Button
+              variant="text"
+              color="blue-gray"
+              className="hidden items-center gap-1 px-4 xl:flex normal-case"
+              onClick={() => dispatch1(LogoutUser())}
+            >
+              Log Out
             </Button>
             <IconButton
               variant="text"

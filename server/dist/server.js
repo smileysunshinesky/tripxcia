@@ -33,7 +33,7 @@ app.use((0, morgan_1.default)("combined", { stream: accessLogStream }));
 app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 app.use('/', routes_1.Router);
 app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);

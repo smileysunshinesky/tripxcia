@@ -3,6 +3,7 @@ import { AuthModel } from "./auth.model";
 import jwt from "jsonwebtoken";
 
 export const AuthLogin = async (req: Request, res: Response) => {
+    console.log(req.body);
     try {
         const { email, password } = req.body;
         if (!email || !password) {
@@ -59,4 +60,21 @@ export const AuthRegister = async (req: Request, res: Response) => {
     }
 }
 
+
+export const AuthLogOut = async (req: Request, res: Response) => {
+    try {
+      // clear refreshToken
+      res.clearCookie("accessToken", { path: "/"});
+  
+      // clear refreshToken
+      res.clearCookie("refreshToken", { path: "/" });
+      // res.clearCookie("refreshToken", { path: "/api/auth/refreshToken" });
+      res.status(200).json({
+        status: "success",
+        message: "Logged out successfully",
+      });
+    } catch (error) {
+        res.status(500).send(error);
+    }
+  };
 

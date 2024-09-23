@@ -34,7 +34,7 @@ export function Sidenav({ brandImg, brandName, routes }) {
             style={{ paddingInline: '5px' }}
             color={sidenavType === "dark" ? "white" : "blue-gray"}
           >
-            <img src={logo} />
+            <img src={logo} alt="Logo" />
           </Typography>
         </Link>
         <IconButton

@@ -12,8 +12,6 @@ import { useNavigate } from "react-router-dom";
 
 export function SignIn() {
 
-  console.log("signIn")
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 

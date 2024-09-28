@@ -90,7 +90,7 @@ const QuerySchema = new mongoose.Schema<QueryInterface>({
     },
     
     confirmed: { type: Schema.Types.Mixed, required: false },
-    returnFliight: { type: Schema.Types.Mixed, required: false },
+    returnFlight: { type: Schema.Types.Mixed, required: false },
 
 });
 

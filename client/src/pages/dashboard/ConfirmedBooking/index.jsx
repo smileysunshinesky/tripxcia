@@ -18,11 +18,16 @@ import { Eye, Receipt, Ticket } from 'lucide-react';
 import TableFlightQuery from '@/components/TableFlightQuery';
 import Swal from 'sweetalert2';
 import { Link, useNavigate, useRoutes } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { getAllQueries } from '@/data/apis';
 import makeRequest from '@/data/api';
+import { useDispatch,useSelector } from "react-redux";
+import { LogoutUser } from "@/redux/actions/authActions";
+
 export default function ConfirmedBooking() {
+
+  const dispatch = useDispatch();
+
   const [selectedRow,setSelectedRow]=useState(null);
   const [isOpen,setIsOpen]=useState(false);
   const [queries,setqueries] = useState([])
@@ -62,14 +67,20 @@ const token=localStorage.getItem('token');
 
     }
         
-    }
-    useEffect(()=>{
-      if(token.length>10){
-        fetchAllQueries();
+  }
+
+  useEffect(() => {
+    if (token) {
+      fetchAllQueries()
+    } else {
+      try {
+        localStorage.setItem('redirectCount', 0);
+        dispatch(LogoutUser());
+      } catch (error) {
+          console.error("Error during logout: ", error);
       }
-    },[token]);
-console.log(selector.query)
-console.log(queries)
+    }
+  }, [token]);
   // const [data,setdata]=useState(FlightQuery);
   return (
     <div className="mt-12 mb-8 flex flex-col gap-12">
@@ -113,7 +124,7 @@ console.log(queries)
                 }`;
 
                 return (
-                  <tr key={1}>
+                  <tr key={index}>
                      <td className={className}>
                       <div className="flex items-center gap-4">
                      
@@ -216,8 +227,8 @@ console.log(queries)
                         staff:row.staff,
                         id:row._id,
                         departureFrom:row.departureFrom,
-                        OurCost:row.ourCost,
-                        Prf:row.prf,
+                        ourCost:row.ourCost,
+                        prf:row.prf,
                         arrivalTo:row.arrivalTo,
                         refundable:row.refundable,
                         fareType:row.fareType,
@@ -288,7 +299,7 @@ console.log(queries)
                 }`;
 
                 return (
-                  <tr key={1}>
+                  <tr key={index}>
                     <td className={className}>
                       <div className="flex items-center gap-4">
                      
@@ -385,8 +396,8 @@ console.log(queries)
                       address:row.address,
                       contact:row.contact,
                       email:row.email,
-                      OurCost:row.ourCost,
-                      Prf:row.prf,
+                      ourCost:row.ourCost,
+                      prf:row.prf,
                       duplicate:row.duplicate,
                       _id:row._id
                     }
@@ -456,7 +467,7 @@ console.log(queries)
                 }`;
 
                 return (
-                  <tr key={1}>
+                  <tr key={index}>
                     <td className={className}>
                       <div className="flex items-center gap-4">
                      
@@ -553,8 +564,8 @@ console.log(queries)
                       address:row.address,
                       contact:row.contact,
                       email:row.email,
-                      OurCost:row.ourCost,
-                      Prf:row.prf,
+                      ourCost:row.ourCost,
+                      prf:row.prf,
                       duplicate:row.duplicate,
                       _id:row._id
                     }

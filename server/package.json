@@ -1,10 +1,10 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "main": "dist/server.js",
+  "main": "server.js",
   "scripts": {
     "build": "npx tsc",
-    "start": "node dist/server.js",
+    "start": "nodemon server.js",
     "dev": "nodemon src/server.ts"
   },
   "keywords": [],

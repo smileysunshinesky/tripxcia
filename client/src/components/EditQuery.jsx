@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import {
   Card,
   CardHeader,
@@ -6,8 +6,7 @@ import {
   Button,
   Input,
   Stepper,
-  Step,
-
+  Step
 } from "@material-tailwind/react";
 import {
   Box,
@@ -31,26 +30,26 @@ import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import { airlines } from "@/data/airlines";
 import airports from "@/data/airports";
-import TableFlightQuery from "@/components/TableFlightQuery";
+import EditTableFlightQuery from "@/components/EditTableFlightQuery";
 import makeRequest from "@/data/api";
-import { GetClients, CabFirstStap, FlightFirstStep, HotelFirstStap, SaveCab, SaveFlight, SaveHotel } from "@/data/apis";
+import { CabFirstStap, FlightFirstStep, HotelFirstStap, SaveCab, SaveFlight, SaveHotel } from "@/data/apis";
 import { useGlobalData } from "@/hooks/GlobalData";
-import { useNavigate } from "react-router-dom/dist";
-import FormDuplicate from "@/components/FormDuplicate";
-import HotelTable from "@/components/HotelTable";
-import TableCabQuery from "@/components/TableCabQuery";
-import HotelDuplicate from "@/components/HotelDuplicate";
-import DuplicateFlightRoundWay from "@/components/DuplicateFlightRoundWay";
+import { useNavigate, useNavigation } from "react-router-dom/dist";
+import EditFormDuplicate from "@/components/EditFormDuplicate";
+import EditHotelTable from "@/components/EditHotelTable";
+import EditTableCabQuery from "@/components/EditTableCabQuery";
+import EditHotelDuplicate from "@/components/EditHotelDuplicate";
+import EditDuplicateFlightRoundWay from "@/components/EditDuplicateFlightRoundWay";
 import CabFormDuplicate from "@/components/CabFormDuplicate";
 import { setCurrentQuery } from '@/redux/actions/queryActions';
 import { useDispatch, useSelector } from "react-redux";
-import { getAllClients } from "@/redux/actions/clientActions";
 
 const steps = [
   { title: 'Step 1', description: 'Contact Info' },
   { title: 'Step 2', description: 'Date & Time' },
   { title: 'Step 3', description: 'Select Rooms' },
   { title: 'Step 4', description: 'Select Rooms' },
+
 ]
 
 export const hotel2NDStepForm = [
@@ -102,7 +101,7 @@ export const hotel2NDStepForm = [
 export const hotelForm = [
   {
     label: 'Domestic / International',
-    id: 'domesticOrInternational',
+    id: 'DomesticOrInternational',
     type: 'select',
     options: ['Domestic', 'International']
   },
@@ -188,57 +187,8 @@ const services = [
   { value: "Hotel", label: "Hotel" },
 
 ]
-export default function GenarateQuery() {
+export default function EditQuery({ isOpen, onClose, isT }) {
   const dispatch = useDispatch();
-
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  const { token } = useSelector((state) => state.user.user);
-
-  useEffect(()=>{
-    console.log(isLoggedIn);
-    if(isLoggedIn) {
-      fetchClients();
-    } else {
-        try {
-          localStorage.setItem('redirectCount', 0);
-          dispatch(LogoutUser());
-        } catch (error) {
-            console.error("Error during logout: ", error);
-        }
-    }
-  },[isLoggedIn, dispatch]);
-
-  const fetchClients = async () => {
-    try {
-        const response = await makeRequest({
-            url: GetClients,
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': token ? `Bearer ${token}` : '', 
-            }
-            });
-
-            const clientsData = response.result || [];  // Fallback to different keys if result doesn't exist
-
-            console.log('Clients data:', clientsData);  // Log to confirm the extracted clients data
-
-            // Dispatch the action only if data exists
-            if (clientsData.length) {
-                dispatch(getAllClients(clientsData));
-            } else {
-                console.warn('No clients data found in response.');
-            }
-        
-    } catch (error) {
-        if (error.response && error.response.status === 403) {
-        toast.error('Token expired');
-        } else {
-        toast.error('Error fetching flight query');
-        navigate('/auth/signIn');
-        }
-    }
-  };
 
   const { currentQuery } = useSelector((state) => state.query);
   const {clients} = useSelector((state) => state.client);
@@ -247,22 +197,25 @@ export default function GenarateQuery() {
   const [selectedArrivalTo, setArrivalTo] = useState(''); // Set initial value
   const [selectedReturnArrivalTo, setReturnArrivalTo] = useState('');
   
-  const [currentStep, setCurrentStep] = useState(0)
+  const [currentStep, setCurrentStep] = useState(currentQuery.stepFirst ? currentQuery.stepFirst - 1 : 0);
+
   const { activeStep } = useSteps({
     index: currentStep,
     count: steps.length,
-  })
-  const navigate = useNavigate()
-  const [flightTable, setFlighttable] = useState(false)
+  });
+
+  const navigate = useNavigate();
+  const [flightTable, setFlighttable] = useState(false);
   const [cabTable, setCabTable] = useState(false);
   const [hotalTable, setHotalTable] = useState(false);
-  const [totalFlightTicket, setTotalFlightTicket] = useState(0);
+  const [totalFlightTicket, setTotalFlightTicket] = useState(currentQuery.duplicate ? currentQuery.duplicate.length : 0);
+  console.log(currentQuery.duplicate.length)
   const [totalCabBooking, setTotalCabBooking] = useState(0);
-  const [totalHotal, setTotalhotel] = useState(0);
-  const [hotelTable, sethotelTable] = useState(false);
-  const [selectedHotelDuplicate, setSelectedHotelDuplicate] = useState([])
-  
+  const [totalHotal, setTotalHotel] = useState(currentQuery.duplicate ? currentQuery.duplicate.length : 0);
+
   const [formsData, setFormsData] = useState(Array.from({ length: totalFlightTicket }, () => ({})));
+  const [cabformsData, setcabFormsData] = useState(Array.from({ length: totalCabBooking }, () => ({})));
+  const [hotelformsData, sethotelFormsData] = useState(Array.from({ length: totalHotal }, () => ({})));
   const handleFormChange = (index, data) => {
     setFormsData((prevData) => {
       const newData = [...prevData];
@@ -270,8 +223,7 @@ export default function GenarateQuery() {
       return newData;
     });
   };
-  const [cabformsData, setcabFormsData] = useState(Array.from({ length: totalCabBooking }, () => ({})));
-  const [hotelformsData, sethotelFormsData] = useState(Array.from({ length: totalHotal }, () => ({})));
+
   const handleFormHotelChange = (index, data) => {
     sethotelFormsData((prevData) => {
       const newData = [...prevData];
@@ -279,8 +231,6 @@ export default function GenarateQuery() {
       return newData;
     });
   };
-
-  console.log("hotelformsData",hotelformsData);
 
   const handleSelectHotel = (e, item) => {
     setdata({ ...data, [item.id]: e.target.value });
@@ -292,77 +242,9 @@ export default function GenarateQuery() {
       return newData;
     });
   };
-  const handleHotelFormChange = (index, data) => {
-    sethotelFormsData((prevData) => {
-      const newData = [...prevData];
-      newData[index] = data;
-      return newData;
-    });
-  };
-  const [data, setdata] = useState({
-    client: 'Select',
-    service: 'Select',
-    passengerNumber: 0,
-    domesticOrInternational: '',
-    oneWayOrRoundway: '',
-    from: 'Select From Location',
-    to: 'Select To Location',
-    departureDate: '',
-    cabType: '',
-    timeSlot: '',
-    city: '',
-    tripStartDateTime: '',
-    tripEndDateTime: '',
-    cab: '',
-    totalPassenger: 0,
-    returnDate: '',
-    flightType: '',
-    airlineNames: '',
-    FlightNumber: '',
-    fareType: '',
-    departureFrom: '',
-    departureTime: '',
-    arrivalTo: '',
-    arrivalTime: '',
-    ourCost: 0,
-    prf: 0,
-    refundable: false,
-    cabBookingType: "",
-    cabExtraPerHours: 0,
-    cabExtraKMS: 0,
-    cabParkingetc: 0,
-    cabPerKmsrate: 0,
-    cabTollPermit: 0,
-    hotelName: '',
-    address: '',
-    totalCost: 0,
-    contact: '',
-    email: '',
-    guestName: '',
-    bookconfirmNo: '',
-    invoiceNumber: '',
-    vendorName: '',
-    checkInDate: "",
-    checkOutDate: "",
-    noOfNights: "",
-    mealPlan: "",
-    hotelCategory: "",
-    roomOcuppency: "",
-    noOfRooms: "",
-    noOfGuests: "",
-    noOfAdults: "",
-    noOfChildren6: "",
-    noOfChildren12: "",
-    via: {
-      FlightNumber: '',
-      departureFrom: '',
-      departureTime: '',
-      arrivalTo: '',
-      arrivalTime: '',
-    }
-  });
+  const [data, setdata] = useState(currentQuery);
 
-  console.log("hoteldata",data)
+  console.log(data);
 
   const handleSelectChange = (e) => {
     console.log(e.target.value);
@@ -426,44 +308,10 @@ export default function GenarateQuery() {
     }));
   }
 
-  const [returnData, setReturnData] = useState({
-    client: 'Select',
-    service: 'Select',
-    passengerNumber: 0,
-    domesticOrInternational: '',
-    oneWayOrRoundway: '',
-    from: 'Select From Location',
-    to: 'Select To Location',
-    departureDate: '',
-    cabType: '',
-    timeSlot: '',
-    city: '',
-    tripStartDateTime: '',
-    tripEndDateTime: '',
-    cab: '',
-    totalPassenger: 0,
-    returnDate: '',
-    flightType: '',
-    airlineNames: '',
-    FlightNumber: '',
-    fareType: '',
-    departureFrom: '',
-    departureTime: '',
-    arrivalTo: '',
-    arrivalTime: '',
-    ourCost: 0,
-    prf: 0,
-    refundable: false,
-    via: {
-      FlightNumber: '',
-      departureFrom: '',
-      departureTime: '',
-      arrivalTo: '',
-      arrivalTime: '',
-    }
-  })
+  const [returnData, setReturnData] = useState(currentQuery?.returnFlight);
 
-  const handleFlightSubmit = async () => {
+  const { token } = useGlobalData()
+  const handleFlightEditSubmit = async () => {
     const body = {
       client: data?.client,
       serviceType: data?.service,
@@ -489,18 +337,18 @@ export default function GenarateQuery() {
       via: data?.via,
       returnFlight: returnData,
     }
+    console.log("body", body)
     await makeRequest({
       method: 'PUT',
-      url: `${SaveFlight}/${queryId}`,
+      url: `${SaveFlight}/${currentQuery?._id}`,
       data: body,
       headers: {
         Authorization: token
       }
-
     })
       .then((response) => {
         if (response) {
-          toast.success('Query Genarated Successfully')
+          toast.success('Query updated Successfully')
 
           if (body.serviceType === 'Flight') {
             navigate('/dashboard/quota-flight')
@@ -512,6 +360,7 @@ export default function GenarateQuery() {
           }
           if (body.serviceType === 'Hotel') {
             navigate('/dashboard/quota-hotel')
+
           }
 
         }
@@ -527,7 +376,7 @@ export default function GenarateQuery() {
   }
 
   // handle hotel submit
-  const handleHotelSubmit = async () => {
+  const handleHotelEditSubmit = async () => {
     const body = {
       client: data?.client,
       serviceType: data?.service,
@@ -556,7 +405,7 @@ export default function GenarateQuery() {
     console.log("body",body)
     await makeRequest({
       method: 'PUT',
-      url: `${SaveHotel}/${queryId}`,
+      url: `${SaveHotel}/${currentQuery?._id}`,
       data: body,
       headers: {
         Authorization: token
@@ -565,7 +414,7 @@ export default function GenarateQuery() {
     })
       .then((response) => {
         if (response) {
-          toast.success('Query Genarated Successfully')
+          toast.success('Query updated Successfully');
 
           if (body.serviceType === 'Flight') {
             navigate('/dashboard/quota-flight')
@@ -592,7 +441,7 @@ export default function GenarateQuery() {
 
   }
 
-  const handleCabSubmit = async () => {
+  const handleCabEditSubmit = async () => {
     const body = {
       client: data?.client,
       serviceType: data?.service,
@@ -610,11 +459,11 @@ export default function GenarateQuery() {
       cabParkingetc: data?.cabParkingetc,
       cabPerKmsrate: data?.cabPerKmsrate,
       cabTollPermit: data?.cabTollPermit,
-      duplicate: cabformsData,
+      duplicate: formsData,
     }
     await makeRequest({
       method: 'PUT',
-      url: `${SaveCab}/${queryId}`,
+      url: `${SaveCab}/${currentQuery?._id}`,
       data: body,
       headers: {
         Authorization: token
@@ -767,8 +616,7 @@ export default function GenarateQuery() {
         })
           .then((response) => {
             if (response) {
-              toast.success('Query Genarated Successfully');
-              dispatch(setCurrentQuery(response?.result));
+              toast.success('Query Genarated Successfully')
               setQueryId(response?.result?._id);
               Swal.fire({
                 title: 'Are you sure?',
@@ -836,8 +684,7 @@ export default function GenarateQuery() {
       })
         .then((response) => {
           if (response) {
-            toast.success('Query Genarated Successfully');
-            dispatch(setCurrentQuery(response?.result));
+            toast.success('Query Genarated Successfully')
             setQueryId(response?.result?._id);
             Swal.fire({
               title: 'Are you sure?',
@@ -1090,11 +937,13 @@ export default function GenarateQuery() {
   }
   const memoizedOptions = useMemo(() => airports, [airports]);
 
+
+
   return (
     <div className="mt-12 mb-8 flex flex-col gap-12 min-w-full">
-      <TableFlightQuery isOpen={flightTable} handleSave={handleFlightSubmit} totalFlightTicket={totalFlightTicket} duplicate={formsData.length > 0 ? formsData : [returnData]} onClose={() => { setHotalTable(false) }} data={data} returnData={returnData} />
-      <HotelTable isOpen={hotalTable} handleSave={handleHotelSubmit} totalHotal={totalHotal}  duplicate={hotelformsData.length > 0 ? hotelformsData : [returnData]} onClose={() => { setHotalTable(false) }} data={data} />
-      <TableCabQuery isOpen={cabTable} handleSave={handleCabSubmit} totalCabBooking={totalCabBooking} duplicate={cabformsData.length > 0 ? cabformsData : [returnData]} onClose={() => { setCabTable(false) }} data={data} />
+      <EditTableFlightQuery isOpen={flightTable} handleSave={handleFlightEditSubmit} totalFlightTicket={totalFlightTicket} duplicate={formsData.length > 0 ? formsData : [returnData]} onClose={() => { setHotalTable(false) }} data={data} returnData={returnData} />
+      <EditHotelTable isOpen={hotalTable} handleSave={handleHotelEditSubmit} duplicate={hotelformsData.length > 0 ? hotelformsData : [returnData]} onClose={() => { setHotalTable(false) }} data={data} />
+      <EditTableCabQuery isOpen={cabTable} handleSave={handleCabEditSubmit} duplicate={cabformsData.length > 0 ? cabformsData : [returnData]} onClose={() => { setCabTable(false) }} data={data} />
       <Card>
         <CardHeader variant="gradient" color="gray" className="mb-8 p-6">
           Genarate Query
@@ -1323,8 +1172,6 @@ export default function GenarateQuery() {
                       )
                       : data.service === 'Hotel' ?
                         (
-
-
                           <>
                             <Box p={4}>
                               <form>
@@ -1336,13 +1183,13 @@ export default function GenarateQuery() {
                                         item.type === 'select' ?
                                           (
                                             <NormalSelect
-                                              id={item.id}
-                                              onChange={(e) => handleSelectHotel(e, item)}
+                                                id={item.id}
+                                                onChange={(e) => handleSelectHotel(e, item)}
                                             >
-                                              <option selected disabled value={''}>Select</option>
-                                              {item.options.map((option) => (
+                                                <option selected disabled value={''}>Select</option>
+                                                {item.options.map((option) => (
                                                 <option value={option}>{option}</option>
-                                              ))}
+                                                ))}
                                             </NormalSelect>
                                           )
                                           :
@@ -1499,7 +1346,7 @@ export default function GenarateQuery() {
                                                         </FormControl>
                                                         <FormControl isRequired>
                                                           <FormLabel>Departure From</FormLabel>
-                                                          <Input disabled type="text" placeholder="Departure From" value={selectedArrivalTo} />
+                                                          <Input disabled type="text" placeholder="Departure From" value={selectedArrivalTo ? selectedArrivalTo : data.via?.departureFrom} />
                                                         </FormControl>
                                                         <FormControl isRequired>
                                                           <FormLabel>Departure Time</FormLabel>
@@ -1509,7 +1356,7 @@ export default function GenarateQuery() {
                                                         </FormControl>
                                                         <FormControl isRequired>
                                                           <FormLabel>Arrival To</FormLabel>
-                                                          <Input disabled type="text" placeholder="PRF" value={currentQuery?.arrivalTo} />
+                                                          <Input disabled type="text" placeholder="PRF" value={currentQuery.via?.arrivalTo} />
                                                         </FormControl>
                                                         <FormControl isRequired>
                                                           <FormLabel>Arrival Time</FormLabel>
@@ -1610,46 +1457,12 @@ export default function GenarateQuery() {
                                                 </FormControl>
                                                 <FormControl isRequired>
                                                   <FormLabel>Departure From</FormLabel>
-                                                  <Input disabled type="text" placeholder="Departure From" value={currentQuery?.arrivalTo} />
+                                                  {currentQuery.flightType === "Via" ? (
+                                                      <Input disabled type="text" placeholder="Departure From" value={currentQuery.via?.arrivalTo ? currentQuery.via?.arrivalTo : returnData.departureFrom} />
+                                                    ) : (
+                                                        <Input disabled type="text" placeholder="Departure From" value={currentQuery?.arrivalTo ? currentQuery?.arrivalTo : returnData.departureFrom} />
+                                                    )}
                                                 </FormControl>
-                                                {/* {data.flightType === 'Via' ? (
-                                                <FormControl isRequired>
-                                                  <FormLabel>Departure From</FormLabel>
-                                                  <Input disabled type="text" placeholder="Departure From" value={currentQuery?.arrivalTo} />
-                                                </FormControl>
-                                                ) : (
-                                                <FormControl isRequired>
-                                                  <FormLabel>Departure From</FormLabel>
-                                                  <Input disabled type="text" placeholder="Departure From" value={selectedArrivalTo} />
-                                                </FormControl>
-
-                                                )} */}
-
-                                                  {/* <Select
-                                                    searchInputPlaceholder="Search for a Airport Name"
-
-                                                    formatOptionLabel={
-                                                      ({ label, city }) => (
-                                                        <Stack divider={<StackDivider />} spacing='2' flexDir={'row'} justifyContent={'space-between'} cursor={'pointer'} my={5}>
-                                                          <Box>
-                                                            <Heading size='xs' textTransform='uppercase'>
-                                                              {city}
-                                                            </Heading>
-                                                            <Text pt='2' fontSize='sm'>
-                                                              {label}
-                                                            </Text>
-                                                          </Box>
-                                                          <Box>
-                                                            <Text pt='2' fontWeight={'bold'} fontSize='sm'>
-                                                              {airports.find((item) => item.name === label).code}
-                                                            </Text>
-                                                          </Box>
-                                                        </Stack>
-                                                      )
-                                                    } options={airports.map((airport) => ({ value: airport.name, label: airport.name, city: airport.city }))} value={{ value: returnData.departureFrom, label: returnData.departureFrom, city: returnData.departureFrom }} onChange={(e) => {
-                                                      setReturnData({ ...returnData, departureFrom: e.value })
-                                                    }
-                                                    } isSearchable={true} /> */}
                                                 <FormControl isRequired>
                                                   <FormLabel>Departure Time</FormLabel>
                                                   <Input type="time" placeholder="Departure Time" value={returnData.departureTime} onChange={(e) => {
@@ -1695,17 +1508,9 @@ export default function GenarateQuery() {
                                                             setReturnData({ ...returnData, via: { ...returnData.via, FlightNumber: e.target.value } })
                                                           }} />
                                                         </FormControl>
-                                                        {/* <FormControl isRequired>
-                                                          <FormLabel>Departure From</FormLabel>
-                                                          <Select options={airports.map((airport) => ({ value: airport.name, label: airport.name }))} value={{ value: returnData.via.departureFrom, label: returnData.via.departureFrom }}
-                                                            onChange={(e) => {
-                                                              setReturnData({ ...returnData, via: { ...returnData.via, departureFrom: e.value } })
-                                                            }}
-                                                            isSearchable={true} />
-                                                        </FormControl> */}
                                                         <FormControl isRequired>
                                                           <FormLabel>Departure From</FormLabel>
-                                                          <Input disabled type="text" placeholder="Departure From" value={selectedReturnArrivalTo} />
+                                                          <Input disabled type="text" placeholder="Departure From" value={selectedReturnArrivalTo ? selectedReturnArrivalTo : returnData.via?.departureFrom} />
                                                         </FormControl>
                                                         <FormControl isRequired>
                                                           <FormLabel>Departure Time</FormLabel>
@@ -1760,7 +1565,7 @@ export default function GenarateQuery() {
 
                                               {Array.from({ length: totalFlightTicket }).map((_, index) => (
                                                 <>
-                                                  <DuplicateFlightRoundWay currentQuery={currentQuery} key={index} index={index} onChange={handleFormChange} />
+                                                  <EditDuplicateFlightRoundWay currentQuery={currentQuery} key={index} index={index} onChange={handleFormChange} />
                                                   <Button style={{ backgroundColor: 'red' }} onClick={() => {
                                                     setTotalFlightTicket(totalFlightTicket - 1)
                                                     setFormsData((prevData) => prevData.filter((_, i) => i !== index));
@@ -1776,11 +1581,6 @@ export default function GenarateQuery() {
                                               </FormControl>
 
                                             </>
-
-
-
-
-
                                           </>
                                         </>
                                       )
@@ -1949,7 +1749,7 @@ export default function GenarateQuery() {
 
                                   {Array.from({ length: totalFlightTicket }).map((_, index) => (
                                     <>
-                                      <FormDuplicate currentQuery={currentQuery} key={index} index={index} onChange={handleFormChange} />
+                                      <EditFormDuplicate currentQuery={currentQuery} key={index} index={index} onChange={handleFormChange} />
                                       <Button style={{ backgroundColor: 'red' }} onClick={() => {
                                         setTotalFlightTicket(totalFlightTicket - 1)
                                         setFormsData((prevData) => prevData.filter((_, i) => i !== index));
@@ -1988,12 +1788,12 @@ export default function GenarateQuery() {
                                                   <NormalSelect
                                                     id={item.id}
                                                     onChange={(e) => handleSelectHotel(e, item)}
-                                                  >
+                                                    >
                                                     <option selected disabled value={''}>Select</option>
                                                     {item.options.map((option) => (
-                                                      <option value={option}>{option}</option>
+                                                        <option value={option}>{option}</option>
                                                     ))}
-                                                  </NormalSelect>
+                                                    </NormalSelect>
                                                 )
                                                 : (
                                                   <Input type={form.type} value={form.id === 'totalCost' ? Number(data.ourCost) + Number(data.prf) : data[form.id]} onChange={(e) => {
@@ -2008,7 +1808,7 @@ export default function GenarateQuery() {
                                   </Grid>
                                   {Array.from({ length: totalHotal }).map((_, index) => (
                                     <>
-                                      <HotelDuplicate remove={() => { setTotalhotel(totalHotal - 1) }} onChange={handleFormHotelChange} index={index} />
+                                      <EditHotelDuplicate currentQuery={currentQuery} remove={() => { setTotalHotel(totalHotal - 1) }} onChange={handleFormHotelChange} index={index} />
                                     </>
                                   ))}
 
@@ -2016,15 +1816,13 @@ export default function GenarateQuery() {
                                     py={10}
                                   >
                                     <Button onClick={async () => {
-                                      setTotalhotel(totalHotal + 1);
+                                      setTotalHotel(totalHotal + 1)
                                     }}>Duplicate</Button>
                                   </FormControl>
                                 </form>
                               </Box>
                             </>
                           </>
-
-
                         )
                           :
                           data.service === 'Cab' ?

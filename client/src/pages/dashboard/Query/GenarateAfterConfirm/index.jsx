@@ -163,7 +163,7 @@ import TableCabQuery from "@/components/TableCabQuery";
       cab:'',
       totalPassenger:0,
       returnDate:'',
-      flightType:'',
+      flightType:'Direct',
       airlineNames:'Select',
       FlightNumber:'',
       fareType:'',
@@ -171,8 +171,8 @@ import TableCabQuery from "@/components/TableCabQuery";
       departureTime:'',
       arrivalTo:'Select Airport',
       arrivalTime:'',
-      OurCost:0,
-      Prf:0,
+      ourCost:0,
+      prf:0,
       refundable:false,
   
   
@@ -252,8 +252,8 @@ useEffect(()=>{
         cabParkingetc: response?.result?.cabParkingetc,
         cabPerKmsrate: response?.result?.cabPerKmsrate,
         cabTollPermit: response?.result?.cabTollPermit,
-        OurCost:response?.result?.ourCost,
-        Prf:response?.result?.prf,
+        ourCost:response?.result?.ourCost,
+        prf:response?.result?.prf,
       })
       hotelForm.map((form)=>{
         const element = document.getElementById(form.id);
@@ -397,8 +397,8 @@ const [hotelTable,sethotelTable]=useState(false)
               address:hotelData.address,
               contact:hotelData.contact,
               email:hotelData.email,
-              OurCost:hotelData.ourCost,
-              Prf:hotelData.prf,
+              ourCost:hotelData.ourCost,
+              prf:hotelData.prf,
               totalCost:Number(hotelData.ourCost)+Number(hotelData.prf),
             }
           }
@@ -409,8 +409,8 @@ const [hotelTable,sethotelTable]=useState(false)
               address:hotelData.address,
               contact:hotelData.contact,
               email:hotelData.email,
-              OurCost:hotelData.ourCost,
-              Prf:hotelData.prf,
+              ourCost:hotelData.ourCost,
+              prf:hotelData.prf,
               totalCost:Number(hotelData.ourCost)+Number(hotelData.prf),
             }
           }
@@ -649,8 +649,8 @@ const [hotelTable,sethotelTable]=useState(false)
               setdata({...data,flightType:e.target.value})
            }}>
             <option selected disabled value={''}>Select</option>
-           <option value="Direct">Direct</option>
-           <option value="Via">Via</option>
+            <option value="Direct">Direct</option>
+            <option value="Via">Via</option>
            </NormalSelect>
           </FormControl>
           <FormControl>
@@ -763,30 +763,29 @@ const [hotelTable,sethotelTable]=useState(false)
          <Grid templateColumns='repeat(3, 1fr)' gap={5}  >
          <FormControl>
            <FormLabel>Our Cost</FormLabel>
-           <Input type="number" placeholder="Our Cost" value={data.OurCost} onChange={(e)=>{
-              setdata({...data,OurCost:e.target.value})
+           <Input type="number" placeholder="Our Cost" value={data.ourCost} onChange={(e)=>{
+              setdata({...data,ourCost:e.target.value})
            }} />
           </FormControl>
           <FormControl>
            <FormLabel>PRF</FormLabel>
-           <Input type="number" placeholder="PRF" value={data.Prf} onChange={(e)=>{
-              setdata({...data,Prf:e.target.value})
+           <Input type="number" placeholder="PRF" value={data.prf} onChange={(e)=>{
+              setdata({...data,prf:e.target.value})
            }} />
           </FormControl>
           <FormControl>
            <FormLabel>Total Cost</FormLabel>
-           <Input disabled type="number" placeholder="PRF" value={Number(data.OurCost)+Number(data.Prf)} />
+           <Input disabled type="number" placeholder="PRF" value={Number(data.ourCost)+Number(data.prf)} />
           </FormControl>
           </Grid>
           </Grid>
           <Grid templateColumns='repeat(3, 1fr)' gap={5}  >
-          <FormControl>
-           <FormLabel>Refundable</FormLabel>
-          <Checkbox isChecked={data.refundable} onChange={(e)=>{
-              setdata({...data,refundable:e.target.checked})
-           }
-            } />
-            
+          <FormControl style={{display: 'flex'}}>
+            <Checkbox isChecked={data.refundable} onChange={(e)=>{
+                setdata({...data,refundable:e.target.checked})
+            }
+              } />
+            <FormLabel style={{marginBottom: '0px', marginLeft: '8px'}}>Refundable</FormLabel>
           </FormControl>
           </Grid>
    
@@ -1167,15 +1166,15 @@ sethotelData({...hotelData,invoiceNumber:e.target.value})         }} type="text"
         <Grid templateColumns='repeat(3, 1fr)' gap={5}  >
         <FormControl>
          <FormLabel>Our Cast</FormLabel>
-         <Input value={data?.OurCost} disabled type="text" placeholder="" />
+         <Input value={data?.ourCost} disabled type="text" placeholder="" />
         </FormControl>
         <FormControl>
          <FormLabel>PRF Cast</FormLabel>
-         <Input disabled type="number" placeholder="PRF" value={Number(data.Prf)} />
+         <Input disabled type="number" placeholder="PRF" value={Number(data.prf)} />
         </FormControl>
         <FormControl>
          <FormLabel>Total</FormLabel>
-         <Input disabled type="number" placeholder="PRF" value={Number(data.Prf)+Number(data?.OurCost)} />
+         <Input disabled type="number" placeholder="PRF" value={Number(data.prf)+Number(data?.ourCost)} />
         </FormControl>
         </Grid>
 
@@ -1224,7 +1223,7 @@ sethotelData({...hotelData,invoiceNumber:e.target.value})         }} type="text"
         <FormControl>
          <FormLabel>Gross Total</FormLabel>
          <Input disabled type="number" placeholder="Total" 
-         value={(Number(data.cabExtraKMS)*Number(cabThirdStep?.cabTotalextraKms))+Number(data.cabParkingetc)+(Number(data.cabExtraPerHours)*Number(cabThirdStep?.cabTotalExtraHour))+Number(data.Prf)+Number(data?.OurCost)} 
+         value={(Number(data.cabExtraKMS)*Number(cabThirdStep?.cabTotalextraKms))+Number(data.cabParkingetc)+(Number(data.cabExtraPerHours)*Number(cabThirdStep?.cabTotalExtraHour))+Number(data.prf)+Number(data?.ourCost)} 
          onChange={(e)=>{
           setCabThirdStep({...cabThirdStep,cabGrosstotal:e.target.value})
          }}/>
@@ -1306,15 +1305,15 @@ sethotelData({...hotelData,invoiceNumber:e.target.value})         }} type="text"
         <Grid templateColumns='repeat(3, 1fr)' gap={5}  >
         <FormControl>
          <FormLabel>Our Cast</FormLabel>
-         <Input value={data?.OurCost} disabled type="text" placeholder="" />
+         <Input value={data?.ourCost} disabled type="text" placeholder="" />
         </FormControl>
         <FormControl>
          <FormLabel>PRF Cast</FormLabel>
-         <Input disabled type="number" placeholder="PRF" value={Number(data.Prf)} />
+         <Input disabled type="number" placeholder="PRF" value={Number(data.prf)} />
         </FormControl>
         <FormControl>
          <FormLabel>Gross Total</FormLabel>
-         <Input  type="number" placeholder="PRF" value={Number(data.Prf)+Number(data?.OurCost)} 
+         <Input  type="number" placeholder="PRF" value={Number(data.prf)+Number(data?.ourCost)} 
          onChange={(e)=>{
           setCabThirdStep({...cabThirdStep,cabGrosstotal:e.target.value})
          }}/>

@@ -18,18 +18,17 @@ export const LoginUser = createAsyncThunk(
 
       // If user is not verified
       if (!data.user) {
-        return rejectWithValue({ message: "User not verified" });
+        toast.error('User not verified');
       } else {
         // Save token to local storage and update user state
         localStorage.setItem('token', `Bearer ${data.user.token}`);
         dispatch(updateUser(data.user));
+        localStorage.setItem('redirectCount', 0);
       }
 
       return data;
     } catch (error) {
-      console.error("Login error: ", error);
-      // Show toast or dispatch error-related actions
-      return rejectWithValue(error.response.data || { message: "Invalid Credentials" });
+      toast.error(error);
     }
   }
 );
@@ -52,8 +51,18 @@ export const LogoutUser = createAsyncThunk(
       localStorage.removeItem("token");
 
       // Redirect the user only once
-      window.location.href = '/auth/signIn'; // Full page reload to login page
+      // Get the redirect count from localStorage, default to 0 if it doesn't exist
+      let redirectCount = parseInt(localStorage.getItem('redirectCount')) || 0;
+      console.log(redirectCount);
 
+      // Check if the redirect count is less than 2
+      if (redirectCount = 0) {
+        // Redirect to the sign-in page
+        window.location.href = '/auth/signIn';
+
+        // Increment the redirect count
+        localStorage.setItem('redirectCount', 1);
+      }
     } catch (error) {
       // In case of an error, still clear user state
       dispatch(logout());

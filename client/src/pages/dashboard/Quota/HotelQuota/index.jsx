@@ -22,7 +22,12 @@ import HotelTable from '@/components/HotelTable';
 import toast from 'react-hot-toast';
 import { getAllQueries } from '@/data/apis';
 import makeRequest from '@/data/api';
+import { LogoutUser } from "@/redux/actions/authActions";
+import { useDispatch } from "react-redux";
+
 export default function HotelQuota() {
+  const dispatch = useDispatch();
+
   const [selectedRow,setSelectedRow]=useState(null);
   const [isOpen,setIsOpen]=useState(false);
   const [queries,setqueries] = useState([]);
@@ -63,16 +68,22 @@ const navigate=useNavigate();
     }
         
     }
-    useEffect(()=>{
-      if(token.length>10){
-        fetchAllQueries();
+
+    useEffect(() => {
+      if (token) {
+        fetchAllQueries()
+      } else {
+        try {
+          localStorage.setItem('redirectCount', 0);
+          dispatch(LogoutUser());
+        } catch (error) {
+            console.error("Error during logout: ", error);
+        }
       }
-    },[token]);
-    console.log('flight query',selectedRow)
-    console.log(queries)
+    }, [token]);
   return (
     <div className="mt-12 mb-8 flex flex-col gap-12">
-      <HotelTable isOpen={isOpen} data={selectedRow} duplicate={selectedRow?.duplicate ?? null} isT={true} onClose={()=>{
+      <HotelTable viewbtn={"yes"} isOpen={isOpen} data={selectedRow} duplicate={selectedRow?.duplicate ?? null} isT={true} onClose={()=>{
         setIsOpen(false)
       }} handleSave={()=>{
         setIsOpen(false)
@@ -114,7 +125,7 @@ const navigate=useNavigate();
                 }`;
 
                 return (
-                  <tr key={1}>
+                  <tr key={index}>
                     <td className={className}>
                       <div className="flex items-center gap-4">
                      
@@ -208,9 +219,10 @@ const navigate=useNavigate();
                       DomesticOrInternational:row.DomesticOrInternational,
                       city:row.city,
                       contact:row.contact,
+                      address:row.address,
                       email:row.email,
-                      OurCost:row.ourCost,
-                      Prf:row.prf,
+                      ourCost:row.ourCost,
+                      prf:row.prf,
                       duplicate:row.duplicate,
                       _id:row._id
                     })

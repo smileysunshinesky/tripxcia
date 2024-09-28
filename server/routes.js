@@ -38,3 +38,6 @@ app.use('/vendors', middleware_controller_1.MiddlewareController, vendor_routes_
 app.use('/auth', auth_routes_1.AuthRoutes);
 app.get('/logs', middleware_controller_1.MiddlewareLog);
 app.use('/server', express_1.default.static('public'));
+app.get("/", (req, res) => {
+    res.send("Backend is running");
+});

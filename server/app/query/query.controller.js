@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.findQueryByID = exports.getAllQueries = exports.getHotelQueries = exports.getCabQueries = exports.getFlightQueries = exports.HotelQueryConfirmed = exports.CabQueryConfirmed = exports.FlightQueryConfirmed = exports.HotelQueryDup = exports.HotelQuery = exports.HotelQueryfirstStep = exports.cabQuerySave = exports.cabQueryfirstStep = exports.FlightQuerySave = exports.FlightQueryfirstStep = void 0;
 const query_model_1 = require("./query.model");
+const { ObjectId } = require('mongodb');
 const FlightQueryfirstStep = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const currentDate = new Date();
@@ -32,7 +33,6 @@ const FlightQueryfirstStep = (req, res) => __awaiter(void 0, void 0, void 0, fun
         });
         console.log(query);
         yield query.save().then((result) => {
-            console.log(result);
             return res.status(200).json({ message: "Query Saved Successfully", result: result });
         }).catch((error) => {
             console.log(error);
@@ -48,6 +48,7 @@ const FlightQuerySave = (req, res) => __awaiter(void 0, void 0, void 0, function
     var _a;
     try {
         const queryId = req.params.id;
+        console.log(req.body);
         const currentDate = new Date();
         const formattedDate = currentDate.toISOString().split('T')[0];
         yield query_model_1.QueryModel.findOneAndUpdate({ _id: queryId }, {
@@ -59,6 +60,8 @@ const FlightQuerySave = (req, res) => __awaiter(void 0, void 0, void 0, function
             fareType: req.body.fareType,
             departureTime: req.body.departureTime,
             arrivalTime: req.body.arrivalTime,
+            departureFrom: req.body.departureFrom,
+            arrivalTo: req.body.arrivalTo,
             ourCost: req.body.ourCost,
             prf: req.body.prf,
             refundable: req.body.refundable,
@@ -67,7 +70,7 @@ const FlightQuerySave = (req, res) => __awaiter(void 0, void 0, void 0, function
             via: req.body.via,
             stepFirst: 2,
             status: 0,
-            returnFliight: (_a = req.body.returnFliight) !== null && _a !== void 0 ? _a : {},
+            returnFlight: (_a = req.body.returnFlight) !== null && _a !== void 0 ? _a : {},
         }).then((result) => {
             console.log(result);
             return res.status(200).json({ message: "Query Saved Successfully", result: result });
@@ -194,10 +197,12 @@ const HotelQuery = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             contact: req.body.contact,
             bookingDate: formattedDate,
             ourCost: req.body.ourCost,
+            duplicate: req.body.duplicate,
             stepFirst: 2,
             prf: req.body.prf,
             status: 0,
         }).then((result) => {
+            // const currentdata = query_model_1.QueryModel.find({_id: query})
             console.log(result);
             return res.status(200).json({ message: "Query Saved Successfully", result: result });
         }).catch((error) => {
@@ -239,11 +244,19 @@ const HotelQueryDup = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.HotelQueryDup = HotelQueryDup;
-const FlightQueryConfirmed = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const FlightQueryConfirmed = async (req, res) => {
     try {
         const queryId = req.params.id;
-        const imageUrl = req.file.path; // URL of the uploaded image
-        yield query_model_1.QueryModel.findOneAndUpdate({ _id: queryId }, {
+
+        // Validate query ID
+        if (!ObjectId.isValid(queryId)) {
+            return res.status(400).json({ message: "Invalid query ID" });
+        }
+
+        const imageUrl = req.file ? req.file.path : ''; // URL of the uploaded image or empty string
+
+        // Prepare update data
+        const updateData = {
             passengerName: req.body.passengerName,
             gender: req.body.gender,
             pnrNumber: req.body.pnrNumber,
@@ -255,19 +268,28 @@ const FlightQueryConfirmed = (req, res) => __awaiter(void 0, void 0, void 0, fun
             vendorName: req.body.vendorName,
             confirmed: req.body.confirmedQuery,
             status: 1,
-        })
-            .then((result) => {
-            console.log(result);
-            return res.status(200).json({ message: "Query Saved Successfully", result: result });
-        }).catch((error) => {
-            console.log(error);
-            return res.status(500).json({ message: error });
-        });
+        };
+
+        // Update the query
+        const result = await QueryModel.findOneAndUpdate(
+            { _id: new ObjectId(queryId) }, // Convert queryId to ObjectId
+            updateData,
+            { new: true } // Return the updated document
+        );
+
+        if (!result) {
+            return res.status(404).json({ message: "Query not found" });
+        }
+
+        console.log(result);
+        return res.status(200).json({ message: "Query Saved Successfully", result });
+
+    } catch (error) {
+        console.error("Error updating query:", error);
+        return res.status(500).json({ message: "An error occurred while saving the query", error });
     }
-    catch (error) {
-        return res.status(500).json({ message: error });
-    }
-});
+};
+
 exports.FlightQueryConfirmed = FlightQueryConfirmed;
 const CabQueryConfirmed = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {

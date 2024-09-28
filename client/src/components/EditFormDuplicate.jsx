@@ -11,9 +11,9 @@ import Select from 'react-tailwindcss-select'
 import { airlines } from '@/data/airlines';
 import airports from '@/data/airports';
 import { Input } from '@material-tailwind/react';
-export default function FormDuplicate({ index, onChange, currentQuery }) {
+export default function EditFormDuplicate({ index, onChange, currentQuery }) {
   const [selectedArrivalTo, setArrivalTo] = useState('');
-  const [data, setdata] = useState({
+  const [data, setdata] = useState(currentQuery.duplicate[index] ? currentQuery.duplicate[index] : {
     flightType: '',
     airlineNames: '',
     FlightNumber: '',

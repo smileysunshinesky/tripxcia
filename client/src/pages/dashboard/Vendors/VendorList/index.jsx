@@ -16,7 +16,11 @@ import makeRequest from '@/data/api';
 import { DeleteClient, GetVendors } from '@/data/apis';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { LogoutUser } from "@/redux/actions/authActions";
+import { useDispatch } from "react-redux";
+
 export default function VendorList() {
+  const dispatch = useDispatch();
   const token=localStorage.getItem('token')
   const navigate = useNavigate();
   const [vendors,setvendors] = useState([]);
@@ -49,11 +53,18 @@ export default function VendorList() {
     }
 };
 
-useEffect(()=>{
-  if(token.length>10){
-    fetchVendors();
+useEffect(() => {
+  if (token) {
+    fetchVendors()
+  } else {
+    try {
+      localStorage.setItem('redirectCount', 0);
+      dispatch(LogoutUser());
+    } catch (error) {
+        console.error("Error during logout: ", error);
+    }
   }
-},[token]);
+}, [token]);
 
   return (
     <div className="mt-12 mb-8 flex flex-col gap-12">

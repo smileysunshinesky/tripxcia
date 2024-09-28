@@ -38,7 +38,6 @@ export function DashboardNavbar() {
 
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const dispatch1 = useDispatch();
-  const navigate = useNavigate(); // To redirect after logout
 
   const handleLogout = () => {
     try {

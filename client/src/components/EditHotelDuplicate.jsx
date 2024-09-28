@@ -46,8 +46,8 @@ export const hotelDuplicate=[
     },
 
   ]
-export default function HotelDuplicate({onChange,index,remove}) {
-    const [data,setdata]=useState({
+export default function HotelDuplicate({onChange,index,remove, currentQuery}) {
+    const [data,setdata]=useState(currentQuery.duplicate[index] ? currentQuery.duplicate[index] : {
         hotelName:'',
         address:'',
         contact:'',

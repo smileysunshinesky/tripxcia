@@ -113,6 +113,6 @@ const QuerySchema = new mongoose_1.default.Schema({
         arrivalTime: { type: String, required: false },
     },
     confirmed: { type: mongoose_1.Schema.Types.Mixed, required: false },
-    returnFliight: { type: mongoose_1.Schema.Types.Mixed, required: false },
+    returnFlight: { type: mongoose_1.Schema.Types.Mixed, required: false },
 });
 exports.QueryModel = mongoose_1.default.model('Query', QuerySchema);

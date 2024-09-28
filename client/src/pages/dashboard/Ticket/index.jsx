@@ -250,30 +250,30 @@ export default function Ticket() {
 //         <Box minW="100%" minH="200px" display="flex" borderColor="lightskyblue" gap={5} borderRadius={1} borderWidth={2} flexDir="column">
 //   <Grid templateColumns="repeat(4, 1fr)" maxH="50%" minH="50%" minW="100%">
 //     <Box display="flex" flexDir="column" justifyContent="center" alignItems="center">
-//       <Text fontSize={15}>{data.returnFliight.airlineNames}</Text>
-//       <Text fontSize={15} fontWeight="bold">{data.returnFliight.flightNumber}</Text>
+//       <Text fontSize={15}>{data.returnFlight.airlineNames}</Text>
+//       <Text fontSize={15} fontWeight="bold">{data.returnFlight.flightNumber}</Text>
 //     </Box>
 //     <Box display="flex" flexDir="column" justifyContent="center" alignItems="center">
 //       <Text fontSize={15}>Departure</Text>
-//       <Text fontSize={15} fontWeight="bold">{data.returnFliight.departureFrom}</Text>
-//       <Text fontSize={15}>{data.returnFliight.departureDate} {data.returnFliight.departureTime} Hrs</Text>
+//       <Text fontSize={15} fontWeight="bold">{data.returnFlight.departureFrom}</Text>
+//       <Text fontSize={15}>{data.returnFlight.departureDate} {data.returnFlight.departureTime} Hrs</Text>
 //     </Box>
 //     <Box display="flex" flexDir="column" justifyContent="center" alignItems="center">
 //       <Text fontSize={15}>Arrival</Text>
 //       <Text fontSize={15} fontWeight="bold">{data.arrivalTo}</Text>
-//       <Text fontSize={15}>{data.returnFliight.arrivalDate} {data.returnFliight.arrivalTime} Hrs</Text>
+//       <Text fontSize={15}>{data.returnFlight.arrivalDate} {data.returnFlight.arrivalTime} Hrs</Text>
 //     </Box>
 //     <Box display="flex" flexDir="column" justifyContent="center" alignItems="center">
-//       <Text fontSize={15}>{data.returnFliight.flightType === 'Direct' ? 'Direct' : '1-Stop Flight'}</Text>
+//       <Text fontSize={15}>{data.returnFlight.flightType === 'Direct' ? 'Direct' : '1-Stop Flight'}</Text>
 //       <Text fontSize={15}>1h 0m</Text>
-//       <Text fontSize={15}>{data.returnFliight.refundable ? 'Fare Refundable' : 'Fare Non-Refundable'}</Text>
+//       <Text fontSize={15}>{data.returnFlight.refundable ? 'Fare Refundable' : 'Fare Non-Refundable'}</Text>
 //     </Box>
 //   </Grid>
   
 //   <Grid templateColumns="repeat(3, 1fr)" maxH="50%" minW="100%">
 //     <Box display="flex" flexDir="column" justifyContent="center" alignItems="center">
 //       <Text fontSize={15}>Passenger Name</Text>
-//       <Text fontSize={15} fontWeight="bold">{data.returnFliight.passengerName}</Text>
+//       <Text fontSize={15} fontWeight="bold">{data.returnFlight.passengerName}</Text>
 //     </Box>
 //     <Box display="flex" flexDir="column" justifyContent="center" alignItems="center">
 //       <Text fontSize={15}>Departure</Text>
@@ -282,7 +282,7 @@ export default function Ticket() {
 //     </Box>
 //     <Box display="flex" flexDir="column" justifyContent="center" alignItems="center">
 //       <Text fontSize={15}>Airline PNR</Text>
-//       <Text fontSize={15} fontWeight="bold">{data.returnFliight.pnrNumber}</Text>
+//       <Text fontSize={15} fontWeight="bold">{data.returnFlight.pnrNumber}</Text>
 //     </Box>
 //   </Grid>
 // </Box>
@@ -306,10 +306,10 @@ export default function Ticket() {
       <VStack spacing={4} align="stretch">
         <Box textAlign="center">
           <Text fontSize="sm" fontWeight="bold">
-          {data.returnFliight.airlineNames}
+          {data.returnFlight.airlineNames}
           </Text>
           <Text fontSize="lg" fontWeight="bold">
-            Flight {data.returnFliight.flightNumber}
+            Flight {data.returnFlight.flightNumber}
           </Text>
         </Box>
 
@@ -320,15 +320,15 @@ export default function Ticket() {
             <Text fontSize="sm" fontWeight="bold">
               Departure
             </Text>
-            <Text>{data.returnFliight.departureFrom}</Text>
-            <Text>{data.returnFliight.departureDate} {data.returnFliight.departureTime} Hrs</Text>
+            <Text>{data.returnFlight.departureFrom}</Text>
+            <Text>{data.returnFlight.departureDate} {data.returnFlight.departureTime} Hrs</Text>
           </Box>
           <Box textAlign="right">
             <Text fontSize="sm" fontWeight="bold">
               Arrival
             </Text>
-            <Text>{data.returnFliight.arrivalTo}</Text>
-            <Text>{data.returnFliight.arrivalDate} {data.returnFliight.arrivalTime} Hrs</Text>
+            <Text>{data.returnFlight.arrivalTo}</Text>
+            <Text>{data.returnFlight.arrivalDate} {data.returnFlight.arrivalTime} Hrs</Text>
           </Box>
         </HStack>
 
@@ -337,12 +337,12 @@ export default function Ticket() {
         <Flex justifyContent="space-between">
           <Box>
             <Text fontSize="sm" fontWeight="bold">
-            {data.returnFliight.flightType === 'Direct' ? 'Direct' : '1-Stop Flight'}
+            {data.returnFlight.flightType === 'Direct' ? 'Direct' : '1-Stop Flight'}
             </Text>
             <Text>{`${time?.hours} : ${time?.minutes} Hrs`}</Text>
           </Box>
           <Box textAlign="right">
-            <Badge colorScheme={data.returnFliight.refundable?"green":"red"}>{data.returnFliight.refundable ? 'Fare Refundable' : 'Fare Non-Refundable'}</Badge>
+            <Badge colorScheme={data.returnFlight.refundable?"green":"red"}>{data.returnFlight.refundable ? 'Fare Refundable' : 'Fare Non-Refundable'}</Badge>
           </Box>
         </Flex>
 
@@ -352,7 +352,7 @@ export default function Ticket() {
           <Text fontSize="sm" fontWeight="bold">
             Passenger Name
           </Text>
-          <Text>{data.returnFliight.passengerName}</Text>
+          <Text>{data.returnFlight.passengerName}</Text>
         </Box>
 
         <Flex justifyContent="space-between">
@@ -360,13 +360,13 @@ export default function Ticket() {
             <Text fontSize="sm" fontWeight="bold">
               Gender
             </Text>
-            <Text>{data?.returnFliight?.gender}</Text>
+            <Text>{data?.returnFlight?.gender}</Text>
           </Box>
           <Box textAlign="right">
             <Text fontSize="sm" fontWeight="bold">
               Airline PNR
             </Text>
-            <Text>{data.returnFliight.pnrNumber}</Text>
+            <Text>{data.returnFlight.pnrNumber}</Text>
           </Box>
         </Flex>
 

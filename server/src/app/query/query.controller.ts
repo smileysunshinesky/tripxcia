@@ -56,7 +56,7 @@ export const FlightQuerySave=async(req:Request,res:Response)=>{
             via:req.body.via,
             stepFirst:2,
             status:0,
-            returnFliight:req.body.returnFliight ?? {},
+            returnFlight:req.body.returnFlight ?? {},
         }).then((result)=>{
             console.log(result)
             return res.status(200).json({message:"Query Saved Successfully",result:result});
@@ -279,7 +279,7 @@ export const FlightQueryConfirmed = async (req: any, res: Response) => {
       console.error("Error updating query:", error);
       return res.status(500).json({ message: "An error occurred while saving the query", error });
     }
-  };
+};
 
 
 export const CabQueryConfirmed=async(req:Request,res:Response)=>{

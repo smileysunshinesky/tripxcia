@@ -151,7 +151,7 @@ export default function AddVendor() {
           <Grid templateColumns={'repeat(3, 1fr)'} gap={4}>
         
           {form.map((item)=>(
-              <FormControl>
+              <FormControl key={item.id}>
                 <FormLabel>{item.label}</FormLabel>
                 <Input placeholder={'Enter '+item.label} id={item.id} type={item.type} required={true} />
               </FormControl>

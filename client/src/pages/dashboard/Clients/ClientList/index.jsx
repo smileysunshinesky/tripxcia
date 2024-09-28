@@ -26,6 +26,7 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { getAllClients } from "@/redux/actions/clientActions";
 import { useDispatch,useSelector } from "react-redux";
+import { LogoutUser } from "@/redux/actions/authActions";
 
 
 
@@ -153,11 +154,18 @@ export default function ClientList() {
     }
   };
 
-useEffect(()=>{
-  if(token.length>10){
-    fetchClients()
-  }
-},[token])
+  useEffect(() => {
+    if (token) {
+      fetchClients()
+    } else {
+      try {
+        localStorage.setItem('redirectCount', 0);
+        dispatch(LogoutUser());
+      } catch (error) {
+          console.error("Error during logout: ", error);
+      }
+    }
+  }, [token]);
 
   return (
     <div className="mt-12 mb-8 flex flex-col gap-12">

@@ -25,6 +25,7 @@ const createClient = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.createClient = createClient;
 const getClients = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('getClients')
     try {
         const clients = yield clients_model_1.ClientModel.find({});
         res.status(200).json({

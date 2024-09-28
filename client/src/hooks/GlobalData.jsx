@@ -20,13 +20,13 @@ export const GlobalDataProvider = ({ children }) => {
     const [user,setuser]=useState(null);
     const [FlightQuery, setFlightQuery] = useState([]);
     const { clients } = useSelector((state) => state.client);
+    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+    const { token } = useSelector((state) => state.user.user);
 
     const [vendors, setvendors] = useState([]);
     const [queries, setqueries] = useState([]);
     const navigate=useNavigate();
-    const token=localStorage.getItem('token')
 
-    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
     useEffect(()=>{
         if(isLoggedIn) {
             fetchFlightQuery();
@@ -34,14 +34,12 @@ export const GlobalDataProvider = ({ children }) => {
             fetchVendors();
             fetchAllQueries();
         } else {
-            console.log(isLoggedIn)
             try {
-                // Dispatch the logout action and wait for it to complete
+                localStorage.setItem('redirectCount', 0);
                 dispatch(LogoutUser());
-              } catch (error) {
+            } catch (error) {
                 console.error("Error during logout: ", error);
-                // Optionally show an error message in the UI
-              }
+            }
         }
     },[dispatch])
     const fetchFlightQueryById=(id)=>{
@@ -63,7 +61,7 @@ export const GlobalDataProvider = ({ children }) => {
                 method:'GET',
                 headers:{
               'Content-Type':'application/json',
-                    'Authorization':token
+                    'Authorization':token ? `Bearer ${token}` : ''
                 }
 
             })
@@ -93,7 +91,7 @@ export const GlobalDataProvider = ({ children }) => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': token
+                    'Authorization': token ? `Bearer ${token}` : ''
                 }
                 });
 
@@ -125,7 +123,7 @@ export const GlobalDataProvider = ({ children }) => {
                 method:'GET',
                 headers:{
                     'Content-Type':'application/json',
-                    'Authorization':token
+                    'Authorization':token ? `Bearer ${token}` : ''
                 }
 
             })
@@ -156,7 +154,7 @@ return navigate('/auth/signIn')           }
                 method:'GET',
                 headers:{
                     'Content-Type':'application/json',
-                    'Authorization':token
+                    'Authorization':token ? `Bearer ${token}` : ''
                 }
 
             })
@@ -205,7 +203,6 @@ return navigate('/auth/signIn')           }
             .catch((error)=>{
                 toast.error('Invalid Credentials')
                 return navigate('/auth/signIn')
-
             })
 
            

@@ -146,12 +146,12 @@ body {
             <p>Departure - {data?.departure}</p>
             <p>Arrival - {data?.arrival}</p>
             <h3>Return</h3>
-             <p> Flight No - {data?.returnFliight?.flightNumber}</p>
-            <p>From - {data?.returnFliight?.departureFrom}</p>
-            <p>To - {data?.returnFliight?.arrivalTo}</p>
+             <p> Flight No - {data?.returnFlight?.flightNumber}</p>
+            <p>From - {data?.returnFlight?.departureFrom}</p>
+            <p>To - {data?.returnFlight?.arrivalTo}</p>
             <p>Date - {}</p>
-            <p>Departure - {data?.returnFliight?.departureTime}</p>
-            <p>Arrival - {data?.returnFliight?.arrivalTime}</p>
+            <p>Departure - {data?.returnFlight?.departureTime}</p>
+            <p>Arrival - {data?.returnFlight?.arrivalTime}</p>
                 </>
             )
             :(

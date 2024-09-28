@@ -1,16 +1,27 @@
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Typography
+} from "@material-tailwind/react";
+
 import TableCabQuery from '@/components/TableCabQuery';
 import makeRequest from '@/data/api';
 import { getCabQueries } from '@/data/apis';
 import { useGlobalData } from '@/hooks/GlobalData';
-import { Card, CardBody, CardHeader, Select, Stack } from '@chakra-ui/react';
-import { Typography } from '@material-tailwind/react';
+import { Select, Stack } from '@chakra-ui/react';
 import { Eye, Receipt } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { useDispatch } from "react-redux";
+
+import { LogoutUser } from "@/redux/actions/authActions";
 
 export default function CabQuota() {
+  const dispatch = useDispatch();
+
   const [isOpen,setIsOpen]=useState(false);
   const [selectedRow,setSelectedRow]=useState(null);
   const token=localStorage.getItem('token');
@@ -44,18 +55,25 @@ export default function CabQuota() {
           return navigate('/auth/signIn')
       }
   }
-  useEffect(()=>{
-    if(token.length>10){
-      fetchCabQuery();
+  useEffect(() => {
+    if (token) {
+      fetchCabQuery()
+    } else {
+      try {
+        localStorage.setItem('redirectCount', 0);
+        dispatch(LogoutUser());
+      } catch (error) {
+          console.error("Error during logout: ", error);
+      }
     }
-  },[token]);
+  }, [token]);
 
   console.log(' cab',queries);
   console.log('selected row',selectedRow)
 
   return (
     <div className="mt-12 mb-8 flex flex-col gap-12">
-      <TableCabQuery isOpen={isOpen} data={selectedRow} isT={true} duplicate={selectedRow?.duplicate ?? null} onClose={()=>{
+      <TableCabQuery viewbtn={"yes"} isOpen={isOpen} data={selectedRow} isT={true} duplicate={selectedRow?.duplicate ?? null} onClose={()=>{
         setIsOpen(false)
       }} handleSave={()=>{}} />
     <Card>
@@ -92,7 +110,7 @@ export default function CabQuota() {
                 }`;
 
                 return (
-                  <tr key={1}>
+                  <tr key={index}>
                      <td className={className}>
                       <div className="flex items-center gap-4">
                      
@@ -176,6 +194,7 @@ export default function CabQuota() {
                   :
                   (
                     <Eye style={{cursor:'pointer'}} onClick={()=>{
+
                       setSelectedRow({
                         client:row.client,
                           serviceType:row.serviceType,
@@ -184,8 +203,8 @@ export default function CabQuota() {
                           tripEndDateTime:row.tripEndDateTime,
                           cabType:row.cabType,
                           totalPassenger:row.totalPassenger,
-                          OurCost:row.ourCost,
-                          Prf:row.prf,
+                          ourCost:row.ourCost,
+                          prf:row.prf,
                           city:row.city,
                           cabExtraPerHours:row.cabExtraPerHours,
                           cabExtraKMS:row.cabExtraKMS,

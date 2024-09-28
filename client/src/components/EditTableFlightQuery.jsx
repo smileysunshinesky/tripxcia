@@ -19,7 +19,7 @@ import { Heading } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-export default function TableFlightQuery({ viewbtn, isOpen, onClose, data, returnData, handleSave, duplicate, isT, totalFlightTicket }) {
+export default function EditTableFlightQuery({ isOpen, onClose, data, returnData, handleSave, duplicate, isT, totalFlightTicket }) {
 
   const [isTable, setIsTable] = useState(isT ? isT : false);
   const copyToClipBoard = () => {
@@ -32,16 +32,16 @@ export default function TableFlightQuery({ viewbtn, isOpen, onClose, data, retur
   const navigate = useNavigate();
   return (
     <>
-      <Modal isOpen={isOpen} onClose={viewbtn ? onClose : copyToClipBoard} size={'auto'} >
+      <Modal isOpen={isOpen} onClose={onClose} size={'auto'} >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Form Submitted Successfully</ModalHeader>
 
-          <ModalCloseButton onClose={copyToClipBoard} />
+          <ModalCloseButton onClose={onClose} />
           <ModalBody overflowX={'scroll'}>
             <Typography component="div" className='my-2' style={{display: 'flex', justifyContent: 'space-between'}}>
               <Typography>
-                {((duplicate && totalFlightTicket > 0) || (duplicate && viewbtn)) && 
+                {(duplicate && totalFlightTicket > 0) && 
                   <Typography className="text-xl font-semibold text-black my-1">
                     Quotation1
                   </Typography>}
@@ -51,20 +51,6 @@ export default function TableFlightQuery({ viewbtn, isOpen, onClose, data, retur
                   </Typography>
                 }
               </Typography>
-                {viewbtn && (
-                  <Typography className='mb-0' style={{alignContent: 'center'}}>
-                    <Button onClick={() => {
-                      dispatch(setQuery({
-                        type: 'Flight',
-                        query: data?.FlightNumber,
-                      }))
-                      navigate('/dashboard/query-confirm/' + data?._id)
-                    }} colorScheme='blue' >Confirm</Button>
-                    <Button colorScheme='blue' className='ml-2' onClick={onClose}>Decline</Button>
-                    <Button colorScheme='blue' className='ml-2' onClick={onClose}>Request more</Button>
-                  </Typography>
-                )}
-
             </Typography>
             
             {data?.flightType && 
@@ -149,7 +135,7 @@ export default function TableFlightQuery({ viewbtn, isOpen, onClose, data, retur
               )
             }
 
-              {((duplicate && totalFlightTicket > 0) || (duplicate && viewbtn)) && <>
+              {((duplicate && totalFlightTicket > 0)) && <>
                 {duplicate.length > 0 && duplicate.map((item, index) => (
                   <>
                   <Typography component="div" className='my-2' style={{display: 'flex', justifyContent: 'space-between'}}>
@@ -163,20 +149,6 @@ export default function TableFlightQuery({ viewbtn, isOpen, onClose, data, retur
                         </Typography>
                       }
                     </Typography>
-                      {viewbtn && (
-                      <Typography className='mb-0' style={{alignContent: 'center'}}>
-                        <Button onClick={() => {
-                          dispatch(setQuery({
-                            type: 'Flight',
-                            query: data?.FlightNumber,
-                          }))
-                          navigate('/dashboard/query-confirm/' + data?._id)
-                        }} colorScheme='blue' >Confirm</Button>
-                        <Button colorScheme='blue' className='ml-2' onClick={onClose}>Decline</Button>
-                        <Button colorScheme='blue' className='ml-2' onClick={onClose}>Request more</Button>
-                      </Typography>
-                      )}
-
                   </Typography>
 
                   {item?.flightType && 
@@ -265,11 +237,9 @@ export default function TableFlightQuery({ viewbtn, isOpen, onClose, data, retur
           </ModalBody>
 
           <ModalFooter>
-           {!viewbtn && 
-             <Button className='ml-2' colorScheme='blue' mr={3} onClick={copyToClipBoard}>
-               Copy to Clipboard
-             </Button>
-           }
+            <Button className='ml-2' colorScheme='blue' mr={3} onClick={copyToClipBoard}>
+              Update
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

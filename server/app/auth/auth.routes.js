@@ -7,3 +7,4 @@ const app = (0, express_1.Router)();
 exports.AuthRoutes = app;
 app.post('/signIn', auth_controller_1.AuthLogin);
 app.post('/register', auth_controller_1.AuthRegister);
+app.post('/logout', auth_controller_1.AuthLogOut);

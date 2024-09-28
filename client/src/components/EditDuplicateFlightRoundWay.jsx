@@ -20,10 +20,10 @@ import toast from "react-hot-toast";
 import { airlines } from '@/data/airlines';
 import airports from '@/data/airports';
 
-const DuplicateFlightRoundWay = ({ index, onChange, currentQuery }) => {
+const EditDuplicateFlightRoundWay = ({ index, onChange, currentQuery }) => {
   const [selectedArrivalTo, setArrivalTo] = useState('');
   const [selectedReturnArrivalTo, setReturnArrivalTo] = useState('');
-  const [returnData, setReturnData] = useState({
+  const [returnData, setReturnData] = useState(currentQuery.duplicate[index]?.returnFlight ? currentQuery.duplicate[index].returnFlight : {
     flightType: '',
     airlineNames: '',
     FlightNumber: '',
@@ -44,7 +44,7 @@ const DuplicateFlightRoundWay = ({ index, onChange, currentQuery }) => {
     }
   })
 
-  const [data, setdata] = useState({
+  const [data, setdata] = useState(currentQuery.duplicate[index] ? currentQuery.duplicate[index] : {
     flightType: '',
     airlineNames: '',
     FlightNumber: '',
@@ -63,8 +63,6 @@ const DuplicateFlightRoundWay = ({ index, onChange, currentQuery }) => {
       departureTime: '',
       arrivalTo: '',
       arrivalTime: '',
-
-
     }
   });
   const handleChange = (e) => {
@@ -515,4 +513,4 @@ const DuplicateFlightRoundWay = ({ index, onChange, currentQuery }) => {
   )
 }
 
-export default DuplicateFlightRoundWay
+export default EditDuplicateFlightRoundWay

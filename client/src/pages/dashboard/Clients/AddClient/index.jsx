@@ -116,7 +116,6 @@ export default function AddClient() {
          <Box p={10}>
          <form onSubmit={async(e)=>{
             e.preventDefault()
-            console.log('submitted')
             const data=form.map((item)=>({
               [item.id]:document.getElementById(item.id)?.value
             }))

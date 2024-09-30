@@ -20,7 +20,7 @@ import Swal from 'sweetalert2';
 import { Link, useNavigate, useRoutes } from 'react-router-dom';
 import HotelTable from '@/components/HotelTable';
 import toast from 'react-hot-toast';
-import { getAllQueries } from '@/data/apis';
+import { getAllqueries } from '@/data/apis';
 import makeRequest from '@/data/api';
 import { LogoutUser } from "@/redux/actions/authActions";
 import { useDispatch } from "react-redux";
@@ -39,7 +39,7 @@ const navigate=useNavigate();
   const fetchAllQueries=async()=>{
     try {
         await makeRequest({
-            url:getAllQueries,
+            url:getAllqueries,
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -48,7 +48,6 @@ const navigate=useNavigate();
 
         })
         .then((response)=>{
-            console.log(response)
             setqueries(response.result)
         }
         )

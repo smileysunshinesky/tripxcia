@@ -45,6 +45,7 @@ import CabFormDuplicate from "@/components/CabFormDuplicate";
 import { setCurrentQuery } from '@/redux/actions/queryActions';
 import { useDispatch, useSelector } from "react-redux";
 import { getAllClients } from "@/redux/actions/clientActions";
+import { LogoutUser } from "@/redux/actions/authActions";
 
 const steps = [
   { title: 'Step 1', description: 'Contact Info' },
@@ -195,7 +196,6 @@ export default function GenarateQuery() {
   const { token } = useSelector((state) => state.user.user);
 
   useEffect(()=>{
-    console.log(isLoggedIn);
     if(isLoggedIn) {
       fetchClients();
     } else {
@@ -220,8 +220,6 @@ export default function GenarateQuery() {
             });
 
             const clientsData = response.result || [];  // Fallback to different keys if result doesn't exist
-
-            console.log('Clients data:', clientsData);  // Log to confirm the extracted clients data
 
             // Dispatch the action only if data exists
             if (clientsData.length) {
@@ -279,8 +277,6 @@ export default function GenarateQuery() {
       return newData;
     });
   };
-
-  console.log("hotelformsData",hotelformsData);
 
   const handleSelectHotel = (e, item) => {
     setdata({ ...data, [item.id]: e.target.value });
@@ -362,10 +358,7 @@ export default function GenarateQuery() {
     }
   });
 
-  console.log("hoteldata",data)
-
   const handleSelectChange = (e) => {
-    console.log(e.target.value);
     if(e.target.value == 'Direct') {
       setdata(prevData => ({
         ...prevData,
@@ -396,7 +389,6 @@ export default function GenarateQuery() {
   }
   
   const handleSelectChange1 = (e) => {
-    console.log(e.target.value);
     if(e.target.value == 'Direct') {
       setdata(prevData => ({
         ...prevData,
@@ -494,7 +486,7 @@ export default function GenarateQuery() {
       url: `${SaveFlight}/${queryId}`,
       data: body,
       headers: {
-        Authorization: token
+        Authorization: token ? `Bearer ${token}` : ''
       }
 
     })
@@ -553,13 +545,12 @@ export default function GenarateQuery() {
       totalCost: data?.ourCost + data?.prf,
       duplicate: hotelformsData,
     }
-    console.log("body",body)
     await makeRequest({
       method: 'PUT',
       url: `${SaveHotel}/${queryId}`,
       data: body,
       headers: {
-        Authorization: token
+        Authorization: token ? `Bearer ${token}` : ''
       }
 
     })
@@ -617,7 +608,7 @@ export default function GenarateQuery() {
       url: `${SaveCab}/${queryId}`,
       data: body,
       headers: {
-        Authorization: token
+        Authorization: token ? `Bearer ${token}` : ''
       }
     })
       .then((response) => {
@@ -676,12 +667,11 @@ export default function GenarateQuery() {
           url: `${FlightFirstStep}`,
           data: body,
           headers: {
-            Authorization: token
+            Authorization: token ? `Bearer ${token}` : ''
           }
         })
           .then((response) => {
             if (response) {
-              console.log(response)
               toast.success('Query Genarated Successfully');
               dispatch(setCurrentQuery(response?.result));
 
@@ -756,13 +746,12 @@ export default function GenarateQuery() {
           city: data?.city,
           bookingDate: data?.bookingDate,
         }
-        console.log("cab fist step", body)
         await makeRequest({
           method: 'POST',
           url: `${CabFirstStap}`,
           data: body,
           headers: {
-            Authorization: token
+            Authorization: token ? `Bearer ${token}` : ''
           }
         })
           .then((response) => {
@@ -808,72 +797,87 @@ export default function GenarateQuery() {
         toast.error('Please select service')
         return
       }
-      const body = {
-        client: data?.client,
-        serviceType: data?.service,
-        city: data?.city,
-        DomesticOrInternational: data?.domesticOrInternational,
-        hotelName: data?.hotelName,
-        checkInDate: data?.checkInDate,
-        checkOutDate: data?.checkOutDate,
-        noOfNights: data?.noOfNights,
-        mealPlan: data?.mealPlan,
-        hotelCategory: data?.hotelCategory,
-        roomOcuppency: data?.roomOcuppency,
-        noOfRooms: data?.noOfRooms,
-        noOfGuests: data?.noOfGuests,
-        noOfAdults: data?.noOfAdults,
-        noOfChildren6: data?.noOfChildren6,
-        noOfChildren12: data?.noOfChildren12,
-      }
-      await makeRequest({
-        method: 'POST',
-        url: `${HotelFirstStap}`,
-        data: body,
-        headers: {
-          Authorization: token
+      else if(!data.domesticOrInternational) {
+        toast.error('Domestic / International is requried!');
+      } else if(!data.city) {
+        toast.error('City is requried!');
+      } else if(!data.hotelName) {
+        toast.error('Hotel Name is requried!');
+      } else if(!data.checkInDate) {
+        toast.error('Check In Date is requried!');
+      } else if(!data.checkOutDate) {
+        toast.error('Check Out Date is requried!');
+      } else if(!data.mealPlan) {
+        toast.error('Meal Plan is requried!');
+      } else if(!data.hotelCategory) {
+        toast.error('Hotel Category is requried!');
+      } else if(!data.roomOcuppency) {
+        toast.error('Room Ocuppency is requried!');
+      } else {
+        const body = {
+          client: data?.client,
+          serviceType: data?.service,
+          city: data?.city,
+          DomesticOrInternational: data?.domesticOrInternational,
+          hotelName: data?.hotelName,
+          checkInDate: data?.checkInDate,
+          checkOutDate: data?.checkOutDate,
+          noOfNights: data?.noOfNights,
+          mealPlan: data?.mealPlan,
+          hotelCategory: data?.hotelCategory,
+          roomOcuppency: data?.roomOcuppency,
+          noOfRooms: data?.noOfRooms,
+          noOfGuests: data?.noOfGuests,
+          noOfAdults: data?.noOfAdults,
+          noOfChildren6: data?.noOfChildren6,
+          noOfChildren12: data?.noOfChildren12,
         }
-      })
-        .then((response) => {
-          if (response) {
-            toast.success('Query Genarated Successfully');
-            dispatch(setCurrentQuery(response?.result));
-            setQueryId(response?.result?._id);
-            Swal.fire({
-              title: 'Are you sure?',
-              text: "You want to genarate query for this service",
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonColor: '#3085d6',
-              cancelButtonColor: '#d33',
-              confirmButtonText: 'Yes, genarate it!'
-            }).then(async (result) => {
-              if (result.isConfirmed) {
-                setCurrentStep(currentStep + 1)
-              }
-              else {
-                toast.error('Query not genarated')
-              }
-            })
+        await makeRequest({
+          method: 'POST',
+          url: `${HotelFirstStap}`,
+          data: body,
+          headers: {
+            Authorization: token ? `Bearer ${token}` : ''
           }
-          else {
+        })
+          .then((response) => {
+            if (response) {
+              toast.success('Query Genarated Successfully');
+              dispatch(setCurrentQuery(response?.result));
+              setQueryId(response?.result?._id);
+              Swal.fire({
+                title: 'Are you sure?',
+                text: "You want to genarate query for this service",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, genarate it!'
+              }).then(async (result) => {
+                if (result.isConfirmed) {
+                  setCurrentStep(currentStep + 1)
+                }
+                else {
+                  toast.error('Query not genarated')
+                }
+              })
+            }
+            else {
+              toast.error('Failed to genarate query')
+              return;
+            }
+          })
+          .catch((error) => {
             toast.error('Failed to genarate query')
             return;
           }
-        })
-        .catch((error) => {
-          toast.error('Failed to genarate query')
-          return;
-        }
-        )
+          )
+      }
 
     }
   }
 
   const handlefinalStep = async () => {
-    console.log('data', data);
-    // Hotel
-
     if(data.service == 'Hotel' && !data.hotelName) {
       toast.error('Hotel Name is requried!');
     } else if(data.service == 'Hotel' && !data.address) {
@@ -1355,7 +1359,6 @@ export default function GenarateQuery() {
                                               if (item.id == 'checkOutDate') {
                                                 const a = document.getElementById('noOfNights');
                                                 a.value = calculateTotalDays(checkInDate, e.target.value).toString();
-                                                console.log(calculateTotalDays(checkInDate, e.target.value))
                                               }
 
 
@@ -1563,9 +1566,7 @@ export default function GenarateQuery() {
                                             <>
                                               <Heading size='md' textTransform='uppercase' color={'blue.500'}>Return</Heading>
 
-                                              <Grid templateColumns='repeat(3, 1fr)' gap={5}  >
-
-
+                                              <Grid templateColumns='repeat(3, 1fr)' gap={5}>
                                                 <FormControl isRequired>
                                                   <FormLabel>Flight Type</FormLabel>
                                                   <NormalSelect value={returnData.flightType} onChange={(e) => {

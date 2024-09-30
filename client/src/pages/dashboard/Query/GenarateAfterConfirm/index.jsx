@@ -45,7 +45,7 @@ import {
   import TableFlightQuery from "@/components/TableFlightQuery";
   import makeRequest from "@/data/api";
   import { useGlobalData } from "@/hooks/GlobalData";
-  import { ConfirmCabQuery, ConfirmFlightQuery, ConfirmHotelQuery, FindQuerybYid, getAllQueries, HotelDup, SaveFlight } from "@/data/apis";
+  import { ConfirmCabQuery, ConfirmFlightQuery, ConfirmHotelQuery, FindQuerybYid, HotelDup } from "@/data/apis";
 import { hotelForm } from "../GenarateQuery";
 import HotelDuplicate from "@/components/HotelDuplicate";
 import axios from "axios";
@@ -140,56 +140,51 @@ import TableCabQuery from "@/components/TableCabQuery";
   export default function GenarateQueryConfirm() {
 
 
-    const [data,setdata]=useState({
-      client:'Select',
-      service:'Select',
-      passengerNumber:0,
-      domesticOrInternational:'',
-      cabBookingType:"",
-      oneWayOrRoundway:'',
-      cabExtraKMS:0,
-      cabExtraPerHours:0,
-      cabParkingetc: 0,
-      cabPerKmsrate: 0,
-      cabTollPermit: 0,
-      from:'',
-      to:'',
-      departureDate:'',
-      cabType:'',
-      timeSlot:'',
-      city:'',
-      tripStartDateTime:'',
-      tripEndDateTime:'',
-      cab:'',
-      totalPassenger:0,
-      returnDate:'',
-      flightType:'Direct',
-      airlineNames:'Select',
-      FlightNumber:'',
-      fareType:'',
-      departureFrom:'Select Airport',
-      departureTime:'',
-      arrivalTo:'Select Airport',
-      arrivalTime:'',
-      ourCost:0,
-      prf:0,
-      refundable:false,
-  
-  
-      
-  
-  
-    })
-    const [currentStep, setCurrentStep] = useState(data.service==='Flight'? 2:2)
-    const { activeStep } = useSteps({
-      index: currentStep,
-      count: steps.length,
-    })
-   const QueryID=useParams().id ;
-   const state = useSelector((state) => state);
+  const [data,setdata]=useState({
+    client:'Select',
+    service:'Select',
+    passengerNumber:0,
+    domesticOrInternational:'',
+    cabBookingType:"",
+    oneWayOrRoundway:'',
+    cabExtraKMS:0,
+    cabExtraPerHours:0,
+    cabParkingetc: 0,
+    cabPerKmsrate: 0,
+    cabTollPermit: 0,
+    from:'',
+    to:'',
+    departureDate:'',
+    cabType:'',
+    timeSlot:'',
+    city:'',
+    tripStartDateTime:'',
+    tripEndDateTime:'',
+    cab:'',
+    totalPassenger:0,
+    returnDate:'',
+    flightType:'Direct',
+    airlineNames:'Select',
+    FlightNumber:'',
+    fareType:'',
+    departureFrom:'Select Airport',
+    departureTime:'',
+    arrivalTo:'Select Airport',
+    arrivalTime:'',
+    ourCost:0,
+    prf:0,
+    refundable:false,
+  });
+  const [currentStep, setCurrentStep] = useState(data.service==='Flight'? 2:2);
+  const { activeStep } = useSteps({
+    index: currentStep,
+    count: steps.length,
+  });
+  const QueryID=useParams().id ;
+  const state = useSelector((state) => state);
 
-    const [handleTable,settable]=useState(false)
-    const [totalFlightTicket,setTotalFlightTicket]=useState(1)
+  const [handleTable,settable]=useState(false)
+  const [totalFlightTicket,setTotalFlightTicket]=useState(1)
  const [hotelData,sethotelData]=useState({
   hotelName:'',
   address:'',
@@ -205,7 +200,6 @@ import TableCabQuery from "@/components/TableCabQuery";
   vendorName:'',
   confirmedQuery:state.query.query
 })
-console.log(state)
     const [thirdStepData,setThirdStepData]=useState({
       passengerName:'',
       gender:'',
@@ -246,7 +240,6 @@ useEffect(()=>{
   })
   .then((response)=>{
   
-      console.log('DATA',response.result)
       setdata({...data,client:response.result.client,service:response.result.serviceType,cabBookingType:response?.result?.cabBookingType,cabExtraKMS:response?.result?.cabExtraKMS,
         cabExtraPerHours:response?.result?.cabExtraPerHours,
         cabParkingetc: response?.result?.cabParkingetc,
@@ -275,7 +268,6 @@ const navigate=useNavigate()
      
   
       }
-      console.log(body)
      await makeRequest({
       method:'PUT',
       url:`${ConfirmFlightQuery}${QueryID}`,
@@ -289,7 +281,6 @@ headers:{
         if(response){
           toast.success('Query Genarated Successfully')
           navigate("/dashboard/confirmed-booking")
-          console.log('RESPONSE',response)
         }
         else{
           toast.error('Failed to genarate query')
@@ -309,7 +300,6 @@ headers:{
      
   
       }
-      console.log(body)
      await makeRequest({
       method:'PUT',
       url:`${ConfirmCabQuery}${QueryID}`,
@@ -323,7 +313,6 @@ headers:{
         if(response){
           toast.success('Query Genarated Successfully')
           navigate("/dashboard/confirmed-booking")
-          console.log('RESPONSE',response)
         }
         else{
           toast.error('Failed to genarate query')

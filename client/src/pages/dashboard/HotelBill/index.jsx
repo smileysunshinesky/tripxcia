@@ -27,7 +27,6 @@ export default function HotelBill() {
 
         },
     }).then((res)=>{
-        console.log(res.result);
         setdata(res.result);
     }
 )
@@ -36,7 +35,6 @@ export default function HotelBill() {
 
     })
   }, []);
-  console.log('hotel invioce',data)
   
   return (
     <div  className="mt-12 mb-8  h-screen px-5 flex flex-col gap-12">

@@ -1,25 +1,26 @@
+
 import {
   HomeIcon,
 } from "@heroicons/react/24/solid";
-import { Home, Profile, Tables, Notifications } from "@/pages/dashboard";
-import { SignIn, SignUp } from "@/pages/auth";
 import { BadgePercent, CarTaxiFront, CheckCircle, Hotel, Plane, Quote, ReceiptText, Settings, Settings2, ShoppingBag, Store, User, UserCog2, UserIcon, UserPlus, UserPlus2, UserRoundCog, Users, Wallet } from "lucide-react";
-import AddClient from "./pages/dashboard/Clients/AddClient";
-import ClientList from "./pages/dashboard/Clients/ClientList";
-import AddVendor from "./pages/dashboard/Vendors/AddVendor";
-import VendorList from "./pages/dashboard/Vendors/VendorList";
-import GenarateQuery from "./pages/dashboard/Query/GenarateQuery";
-import QueryList from "./pages/dashboard/Query/QueryList";
-import FlightQuota from "./pages/dashboard/Quota/FlightQuota";
-import CabQuota from "./pages/dashboard/Quota/CabQuota";
-import HotelQuota from "./pages/dashboard/Quota/HotelQuota";
-import ConfirmedBooking from "./pages/dashboard/ConfirmedBooking";
-import Payments from "./pages/dashboard/Payment";
-import Billings from "./pages/dashboard/Billings";
-import Role from "./pages/dashboard/Role";
-import Sales from "./pages/dashboard/Sales";
-import path from "path";
-import GenarateQueryConfirm from "./pages/dashboard/Query/GenarateAfterConfirm";
+
+import { lazy } from "react";
+const Home = lazy(() => import("@/pages/dashboard/home"));
+const AddClient = lazy(() => import("./pages/dashboard/Clients/AddClient"));
+const ClientList = lazy(() => import("./pages/dashboard/Clients/ClientList"));
+const AddVendor = lazy(() => import("./pages/dashboard/Vendors/AddVendor"));
+const VendorList = lazy(() => import("./pages/dashboard/Vendors/VendorList"));
+const GenarateQuery = lazy(() => import("./pages/dashboard/Query/GenarateQuery"));
+const QueryList = lazy(() => import("./pages/dashboard/Query/QueryList"));
+const GenarateQueryConfirm = lazy(() => import("./pages/dashboard/Query/GenarateAfterConfirm"));
+const FlightQuota = lazy(() => import("./pages/dashboard/Quota/FlightQuota"));
+const CabQuota = lazy(() => import("./pages/dashboard/Quota/CabQuota"));
+const HotelQuota = lazy(() => import("./pages/dashboard/Quota/HotelQuota"));
+const ConfirmedBooking = lazy(() => import("./pages/dashboard/ConfirmedBooking"));
+const Payments = lazy(() => import("./pages/dashboard/Payment"));
+const Billings = lazy(() => import("./pages/dashboard/Billings"));
+const Role = lazy(() => import("./pages/dashboard/Role"));
+const Sales = lazy(() => import("./pages/dashboard/Sales"));
 
 const icon = {
   className: "w-5 h-5 text-inherit",

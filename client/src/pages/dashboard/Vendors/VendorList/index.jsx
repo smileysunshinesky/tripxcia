@@ -76,13 +76,17 @@ useEffect(() => {
       </CardHeader>
       <CardBody className="overflow-x-scroll p-4 ">
         <table className="min-w-full divide-y divide-gray-200">
-          {["Name", "Email", "Phone", "Address", "GSTIN", "PAN", "TAN", "CIN", "Actions"].map((heading) => (
-            <th key={heading} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              {heading}
-            </th>
-          ))}
-          {
-            vendors.map((client) => (
+          <thead>
+            <tr>
+              {["Name", "Email", "Phone", "Address", "GSTIN", "PAN", "TAN", "CIN", "Actions"].map((heading) => (
+                <th key={heading} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {heading}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+          {vendors.map((client) => (
               <tr key={client._id} className="bg-white">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {client.name}
@@ -128,6 +132,7 @@ useEffect(() => {
               </tr>
             ))
           }
+          </tbody>
           </table>
         </CardBody>
         </Card>

@@ -91,7 +91,6 @@ function handleRejected(state, action) {
   state.error = true;
 }
 function handleLoginSuccess(state, action) {
-  console.log(action.payload);
   // check if user is verified
   if (action.payload?.user) {
     state.isLoggedIn = true;

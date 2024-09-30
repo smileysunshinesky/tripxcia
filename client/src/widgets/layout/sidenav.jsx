@@ -152,7 +152,7 @@ export function Sidenav({ brandImg, brandName, routes }) {
                         color={
                           isActive
                             ? sidenavColor
-                            : sidenavType === "dark"
+                            : sidenavType === "indigo"
                               ? "white"
                               : "blue-gray"
                         }

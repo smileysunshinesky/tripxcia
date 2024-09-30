@@ -24,8 +24,6 @@ import { setQuery } from '@/redux/actions/queryActions';
 export default function HotelTable({ isOpen, onClose, data, handleSave, duplicate, isT, viewbtn }) {
   const [isTable, setIsTable] = useState(isT ? isT : false);
 
-  console.log(data)
-
   const navigate = useNavigate();
   const copyToClipBoard = () => {
     const copyData = `<div style=\"font-family: Arial, sans-serif; line-height: 1.6; margin-bottom: 20px; background-color: #FFA500; padding: 15px; border-radius: 8px;\"><p><strong>Airline Name:</strong> ${data?.airlineNames}</p><p><strong>Fare Type:</strong> ${data?.fareType}</p><p><strong>Departure Time:</strong> ${data?.departureFrom}</p><p><strong>Arrival Time:</strong> ${data?.arrivalTo}</p><p><strong>Total Cost:</strong> ₹ ${(Number(data?.ourCost) + Number(data?.prf)).toFixed(2)}</p><p><strong>Fare Refundable/Non-refundable:</strong> ${data?.refundable ? 'Refundable' : 'Non-Refundable'}</p></div>`;
@@ -34,7 +32,6 @@ export default function HotelTable({ isOpen, onClose, data, handleSave, duplicat
     handleSave()
     onClose()
   }
-  // console.log(duplicate)
   const dispatch = useDispatch();
 
   return (

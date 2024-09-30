@@ -16,10 +16,12 @@ export const LoginUser = createAsyncThunk(
 
       toast.success(data.message);
 
+      
       // If user is not verified
       if (!data.user) {
         toast.error('User not verified');
       } else {
+        localStorage.setItem('redirectCount', 1);
         // Save token to local storage and update user state
         localStorage.setItem('token', `Bearer ${data.user.token}`);
         dispatch(updateUser(data.user));
@@ -53,7 +55,6 @@ export const LogoutUser = createAsyncThunk(
       // Redirect the user only once
       // Get the redirect count from localStorage, default to 0 if it doesn't exist
       let redirectCount = parseInt(localStorage.getItem('redirectCount')) || 0;
-      console.log(redirectCount);
 
       // Check if the redirect count is less than 2
       if (redirectCount = 0) {
@@ -171,7 +172,6 @@ export const RefreshToken = createAsyncThunk(
   "auth/refresh-token",
   async (arg, { rejectWithValue, dispatch }) => {
     try {
-      console.log("refresh-token");
       const { data } = await axios.post("/auth/refresh-token");
 
       // if user is not verified

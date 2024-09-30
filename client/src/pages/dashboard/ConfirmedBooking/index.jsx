@@ -19,7 +19,7 @@ import TableFlightQuery from '@/components/TableFlightQuery';
 import Swal from 'sweetalert2';
 import { Link, useNavigate, useRoutes } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { getAllQueries } from '@/data/apis';
+import { getAllqueries } from '@/data/apis';
 import makeRequest from '@/data/api';
 import { useDispatch,useSelector } from "react-redux";
 import { LogoutUser } from "@/redux/actions/authActions";
@@ -39,7 +39,7 @@ const token=localStorage.getItem('token');
   const fetchAllQueries=async()=>{
     try {
         await makeRequest({
-            url:getAllQueries,
+            url:getAllqueries,
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -48,8 +48,7 @@ const token=localStorage.getItem('token');
 
         })
         .then((response)=>{
-            console.log(response)
-            setqueries(response.result)
+            setqueries(response.result);
         }
         )
         .catch((error)=>{

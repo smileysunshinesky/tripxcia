@@ -3,9 +3,9 @@ import storage from "redux-persist/lib/storage";
 import {
   authReducer,
   queryReducer,
-//   contactReducer,
   userReducer,
-  clientReducer
+  clientReducer,
+  vendorReducer
 } from "./reducers";
 
 const rootPersistConfig = {
@@ -22,9 +22,8 @@ const rootReducer = combineReducers({
     query: queryReducer,
     user: userReducer,
     client: clientReducer,
+    vendor: vendorReducer,
 
-//   project: projectReducer,
-//   contact: contactReducer,
 });
 
 export { rootPersistConfig, rootReducer };

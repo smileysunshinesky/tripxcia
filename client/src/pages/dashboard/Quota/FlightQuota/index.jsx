@@ -24,7 +24,6 @@ export default function FlightQuota() {
   const [FlightQuery, setFlightQuery] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
 
-  console.log("selectedRow", selectedRow?.duplicate)
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -41,7 +40,6 @@ export default function FlightQuota() {
 
       })
         .then((response) => {
-          console.log("FlightQuery", response);
           setFlightQuery(response.result)
         }
         )

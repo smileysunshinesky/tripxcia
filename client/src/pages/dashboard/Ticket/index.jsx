@@ -10,7 +10,6 @@ export default function Ticket() {
     const queryID=useParams().id;
     const {fetchFlightQueryById}=useGlobalData();
     const data=fetchFlightQueryById(queryID);
-    console.log(data);
     const targetRef=useRef();
     const handlePrint=useReactToPrint({
         content:()=>targetRef.current

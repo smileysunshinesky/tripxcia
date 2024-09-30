@@ -192,6 +192,7 @@ export default function EditQuery({ isOpen, onClose, isT }) {
 
   const { currentQuery } = useSelector((state) => state.query);
   const {clients} = useSelector((state) => state.client);
+  const { token } = useSelector((state) => state.user.user);
 
   const [queryId, setQueryId] = useState("");
   const [selectedArrivalTo, setArrivalTo] = useState(''); // Set initial value
@@ -209,7 +210,6 @@ export default function EditQuery({ isOpen, onClose, isT }) {
   const [cabTable, setCabTable] = useState(false);
   const [hotalTable, setHotalTable] = useState(false);
   const [totalFlightTicket, setTotalFlightTicket] = useState(currentQuery.duplicate ? currentQuery.duplicate.length : 0);
-  console.log(currentQuery.duplicate.length)
   const [totalCabBooking, setTotalCabBooking] = useState(0);
   const [totalHotal, setTotalHotel] = useState(currentQuery.duplicate ? currentQuery.duplicate.length : 0);
 
@@ -244,10 +244,7 @@ export default function EditQuery({ isOpen, onClose, isT }) {
   };
   const [data, setdata] = useState(currentQuery);
 
-  console.log(data);
-
   const handleSelectChange = (e) => {
-    console.log(e.target.value);
     if(e.target.value == 'Direct') {
       setdata(prevData => ({
         ...prevData,
@@ -278,7 +275,6 @@ export default function EditQuery({ isOpen, onClose, isT }) {
   }
   
   const handleSelectChange1 = (e) => {
-    console.log(e.target.value);
     if(e.target.value == 'Direct') {
       setdata(prevData => ({
         ...prevData,
@@ -310,7 +306,6 @@ export default function EditQuery({ isOpen, onClose, isT }) {
 
   const [returnData, setReturnData] = useState(currentQuery?.returnFlight);
 
-  const { token } = useGlobalData()
   const handleFlightEditSubmit = async () => {
     const body = {
       client: data?.client,
@@ -337,13 +332,12 @@ export default function EditQuery({ isOpen, onClose, isT }) {
       via: data?.via,
       returnFlight: returnData,
     }
-    console.log("body", body)
     await makeRequest({
       method: 'PUT',
       url: `${SaveFlight}/${currentQuery?._id}`,
       data: body,
       headers: {
-        Authorization: token
+        Authorization: token ? `Bearer ${token}` : ''
       }
     })
       .then((response) => {
@@ -402,13 +396,12 @@ export default function EditQuery({ isOpen, onClose, isT }) {
       totalCost: data?.ourCost + data?.prf,
       duplicate: hotelformsData,
     }
-    console.log("body",body)
     await makeRequest({
       method: 'PUT',
       url: `${SaveHotel}/${currentQuery?._id}`,
       data: body,
       headers: {
-        Authorization: token
+        Authorization: token ? `Bearer ${token}` : ''
       }
 
     })
@@ -466,7 +459,7 @@ export default function EditQuery({ isOpen, onClose, isT }) {
       url: `${SaveCab}/${currentQuery?._id}`,
       data: body,
       headers: {
-        Authorization: token
+        Authorization: token ? `Bearer ${token}` : ''
       }
     })
       .then((response) => {
@@ -525,12 +518,11 @@ export default function EditQuery({ isOpen, onClose, isT }) {
           url: `${FlightFirstStep}`,
           data: body,
           headers: {
-            Authorization: token
+            Authorization: token ? `Bearer ${token}` : ''
           }
         })
           .then((response) => {
             if (response) {
-              console.log(response)
               toast.success('Query Genarated Successfully');
               dispatch(setCurrentQuery(response?.result));
 
@@ -605,13 +597,12 @@ export default function EditQuery({ isOpen, onClose, isT }) {
           city: data?.city,
           bookingDate: data?.bookingDate,
         }
-        console.log("cab fist step", body)
         await makeRequest({
           method: 'POST',
           url: `${CabFirstStap}`,
           data: body,
           headers: {
-            Authorization: token
+            Authorization: token ? `Bearer ${token}` : ''
           }
         })
           .then((response) => {
@@ -679,7 +670,7 @@ export default function EditQuery({ isOpen, onClose, isT }) {
         url: `${HotelFirstStap}`,
         data: body,
         headers: {
-          Authorization: token
+          Authorization: token ? `Bearer ${token}` : ''
         }
       })
         .then((response) => {
@@ -718,9 +709,6 @@ export default function EditQuery({ isOpen, onClose, isT }) {
   }
 
   const handlefinalStep = async () => {
-    console.log('data', data);
-    // Hotel
-
     if(data.service == 'Hotel' && !data.hotelName) {
       toast.error('Hotel Name is requried!');
     } else if(data.service == 'Hotel' && !data.address) {
@@ -1202,7 +1190,6 @@ export default function EditQuery({ isOpen, onClose, isT }) {
                                               if (item.id == 'checkOutDate') {
                                                 const a = document.getElementById('noOfNights');
                                                 a.value = calculateTotalDays(checkInDate, e.target.value).toString();
-                                                console.log(calculateTotalDays(checkInDate, e.target.value))
                                               }
 
 
@@ -1547,7 +1534,7 @@ export default function EditQuery({ isOpen, onClose, isT }) {
                                                     }} />
                                                   </FormControl>
                                                   <FormControl isRequired>
-                                                    <FormLabel>Total Cost</FormLabel>
+                                                    <FormLabel>Total Cost1</FormLabel>
                                                     <Input disabled type="number" placeholder="PRF" value={Number(returnData.ourCost) + Number(returnData.prf)} />
                                                   </FormControl>
                                                 </Grid>

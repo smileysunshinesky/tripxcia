@@ -16,7 +16,7 @@ import Swal from 'sweetalert2';
 import { Link, useNavigate, useRoutes } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import makeRequest from '@/data/api';
-import { getAllQueries } from '@/data/apis';
+import { getAllqueries } from '@/data/apis';
 import { useDispatch } from "react-redux";
 import { LogoutUser } from "@/redux/actions/authActions";
 import { setCurrentQuery } from '@/redux/actions/queryActions';
@@ -34,7 +34,7 @@ export default function QueryList() {
   const fetchAllQueries = async () => {
     try {
       await makeRequest({
-        url: getAllQueries,
+        url: getAllqueries,
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -43,7 +43,6 @@ export default function QueryList() {
 
       })
         .then((response) => {
-          console.log('response', response)
           setqueries(response.result)
         }
         )

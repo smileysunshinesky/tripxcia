@@ -135,10 +135,8 @@ const EditDuplicateFlightRoundWay = ({ index, onChange, currentQuery }) => {
 
   const handleReturnChange = (e) => {
     if (e.target.name === 'flightType') {
-      console.log(e.target.value);
       if (e.target.value == 'Direct') {
         setReturnData((prevData) => {
-          console.log(prevData)
           const updatedData = {
             ...prevData,
             flightType: "Direct",
@@ -174,8 +172,6 @@ const EditDuplicateFlightRoundWay = ({ index, onChange, currentQuery }) => {
       }
     }
   };
-  console.log('data', data);
-  console.log('returnData', returnData);
 
   return (
     <div>

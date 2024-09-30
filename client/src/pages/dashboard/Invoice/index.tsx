@@ -13,7 +13,6 @@ export default function Invoice() {
     const handlePrint=useReactToPrint({
         content:()=>targetRef.current
     })
-    console.log('invoice',data)
 
   return (
    <>

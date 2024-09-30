@@ -24,7 +24,6 @@ const AuthLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const user = yield auth_model_1.AuthModel.findOne({ email, password });
         
         if (!user) {
-            console.log("user")
             return res.status(404).send("User not found");
         }
         const token = jsonwebtoken_1.default.sign({

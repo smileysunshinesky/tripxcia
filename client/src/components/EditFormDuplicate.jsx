@@ -36,8 +36,6 @@ export default function EditFormDuplicate({ index, onChange, currentQuery }) {
 
   const handleChange = (e) => {
 
-    console.log(e.target.name)
-
     if (e.target.name === 'flightType') {
       if(e.target.value == 'Direct') {
         setdata((prevData) => {

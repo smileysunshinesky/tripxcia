@@ -39,7 +39,6 @@ export default function CabQuota() {
 
           })
           .then((response)=>{
-              console.log(response)
               setqueries(response.result)
           }
           )
@@ -67,9 +66,6 @@ export default function CabQuota() {
       }
     }
   }, [token]);
-
-  console.log(' cab',queries);
-  console.log('selected row',selectedRow)
 
   return (
     <div className="mt-12 mb-8 flex flex-col gap-12">

@@ -1,9 +1,10 @@
-import { SET_QUERY, SET_CURRENT_QUERY } from '../actions/queryActions';
+import { SET_QUERY, SET_CURRENT_QUERY, GET_ALL_QUERIES } from '../actions/queryActions';
 
 const initialState = {
   type: '',
   query: '',
   currentQuery: null,
+  queries: [],
 };
 
 const queryReducer = (state = initialState, action) => {
@@ -17,6 +18,11 @@ const queryReducer = (state = initialState, action) => {
       return {
         ...state,
         currentQuery: action.payload,
+      };
+    case GET_ALL_QUERIES:
+      return {
+        ...state,
+        queries: action.payload,
       };
     default:
       return state;

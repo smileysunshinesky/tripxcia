@@ -1,4 +1,3 @@
-import { useGlobalData } from "@/hooks/GlobalData";
 import {
   Card,
   Input,

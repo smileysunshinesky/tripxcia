@@ -3,8 +3,6 @@ import React, { useState } from 'react'
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Typography } from '@material-tailwind/react';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 const TableCabQuery = ({ isOpen, onClose, data, handleSave, duplicate, isT, viewbtn, totalCabBooking }) => {
 
@@ -13,27 +11,42 @@ const TableCabQuery = ({ isOpen, onClose, data, handleSave, duplicate, isT, view
   const dispatch = useDispatch();
 
   const copyToClipBoard = () => {
-    const copyData = `<div style=\"font-family: Arial, sans-serif; line-height: 1.6; margin-bottom: 20px; background-color: #FFA500; padding: 15px; border-radius: 8px;\"><p><strong>Airline Name:</strong> ${data?.airlineNames}</p><p><strong>Fare Type:</strong> ${data?.fareType}</p><p><strong>Departure Time:</strong> ${data?.departureFrom}</p><p><strong>Arrival Time:</strong> ${data?.arrivalTo}</p><p><strong>Total Cost:</strong> ₹ ${(Number(data?.ourCost) + Number(data?.prf)).toFixed(2)}</p><p><strong>Fare Refundable/Non-refundable:</strong> ${data?.refundable ? 'Refundable' : 'Non-Refundable'}</p></div>`;
-
+    let copyData = "";
+  
+    // Helper function to generate text for each quotation
+    const generateQuotationText = (quotation, index) => {
+      let text = `Quotation ${index + 1}\n`;
+      text += `Cab Booking Type: ${quotation.cabBookingType}\n`;
+      text += `Client Name: ${quotation.client}\n`;
+      text += `City: ${quotation.city}\n`;
+      text += `Total Cost: ₹ ${(Number(quotation.ourCost) + Number(quotation.prf)).toFixed(2)}\n`;
+      text += `Fare Refundable/Non-refundable: ${quotation.refundable ? 'Refundable' : 'Non-Refundable'}\n\n`;
+      return text;
+    };
+  
+    // Generate text for Main Data
+    copyData += generateQuotationText(data, 0);
+  
+    // Generate text for Duplicates
+    if (duplicate && duplicate.length > 0) {
+      duplicate.forEach((item, index) => {
+        copyData += generateQuotationText(item, index + 1);
+      });
+    }
+  
+    // Copy the compiled text to the clipboard
     window.navigator.clipboard.writeText(copyData)
-    handleSave()
-    onClose()
-  }
-
-  const downloadPDF = () => {
-    const input = document.getElementById('table-content');
-
-    html2canvas(input).then((canvas) => {
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save('cab-booking-details.pdf');
-    });
+      .then(() => {
+        console.log('Copied to clipboard successfully!');
+        handleSave();
+        onClose();
+      })
+      .catch((err) => {
+        console.error('Failed to copy:', err);
+      });
   };
+  
+  
 
   return (
     <>
@@ -110,15 +123,10 @@ const TableCabQuery = ({ isOpen, onClose, data, handleSave, duplicate, isT, view
               </Typography>
             )}
             {!viewbtn && (
-              <>
-                <Button className='ml-2' colorScheme='blue' mr={3} onClick={copyToClipBoard}>
-                  Copy to Clipboard
-                </Button>
-              </>
+              <Button className='ml-2' colorScheme='blue' mr={3} onClick={copyToClipBoard}>
+                Copy to Clipboard
+              </Button>
             )}
-                <Button className='ml-2' colorScheme='blue' onClick={downloadPDF}>
-                  Download as PDF
-                </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

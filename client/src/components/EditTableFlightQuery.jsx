@@ -1,6 +1,8 @@
 import { setQuery } from '@/redux/actions/queryActions';
 import {
   Table,
+  Thead,
+  Tbody,
   Button,
   Tr,
   Td,
@@ -23,10 +25,75 @@ export default function EditTableFlightQuery({ isOpen, onClose, data, returnData
 
   const [isTable, setIsTable] = useState(isT ? isT : false);
   const copyToClipBoard = () => {
-    const copyData = `<div style=\"font-family: Arial, sans-serif; line-height: 1.6; margin-bottom: 20px; background-color: #FFA500; padding: 15px; border-radius: 8px;\"><p><strong>Airline Name:</strong> ${data?.airlineNames}</p><p><strong>Fare Type:</strong> ${data?.fareType}</p><p><strong>Departure Time:</strong> ${data?.departureFrom}</p><p><strong>Arrival Time:</strong> ${data?.arrivalTo}</p><p><strong>Total Cost:</strong> ₹ ${(Number(data?.ourCost) + Number(data?.prf)).toFixed(2)}</p><p><strong>Fare Refundable/Non-refundable:</strong> ${data?.refundable ? 'Refundable' : 'Non-Refundable'}</p></div>`;
+    let copyData = "";
+  
+    // Helper function to generate text for each quotation
+    const generateQuotationText = (quotation, index) => {
+      let text = `Quotation ${index + 1}\n`;
+      text += `Onward Flight Details:\n`;
+      text += `Airline Name: ${quotation.airlineNames}\n`;
+      text += `Flight Number: ${quotation.FlightNumber}\n`;
+      text += `Departure Airport: ${quotation.departureFrom}\n`;
+      text += `Arrival Airport: ${quotation.arrivalTo}\n`;
+      text += `Fare Type: ${quotation.fareType}\n`;
+      text += `Flight Type: ${quotation.flightType}\n`;
+      text += `Total Cost: ₹ ${(Number(quotation.ourCost) + Number(quotation.prf)).toFixed(2)}\n`;
+      text += `Fare Refundable/Non-refundable: ${quotation.refundable ? 'Refundable' : 'Non-Refundable'}\n`;
+  
+      // Via Flight Details (if any)
+      if (quotation.via && quotation.via.arrivalTo) {
+        text += `\nVia Flight Details:\n`;
+        text += `Via Flight Number: ${quotation.via.FlightNumber}\n`;
+        text += `Via Departure Airport: ${quotation.via.departureFrom}\n`;
+        text += `Via Arrival Airport: ${quotation.via.arrivalTo}\n`;
+      }
+  
+      // Return Flight Details (if Round Trip)
+      if ((quotation.oneWayOrRoundway === 'Round Way' || quotation.OneWayOrRoundTrip === 'Round Way') && quotation.returnFlight?.flightType) {
+        text += `\nReturn Flight Details:\n`;
+        text += `Airline Name: ${quotation.returnFlight.airlineNames}\n`;
+        text += `Flight Number: ${quotation.returnFlight.FlightNumber}\n`;
+        text += `Departure Airport: ${quotation.returnFlight.departureFrom}\n`;
+        text += `Arrival Airport: ${quotation.returnFlight.arrivalTo}\n`;
+        text += `Fare Type: ${quotation.returnFlight.fareType}\n`;
+        text += `Flight Type: ${quotation.returnFlight.flightType}\n`;
+        text += `Total Cost: ₹ ${(Number(quotation.returnFlight.ourCost) + Number(quotation.returnFlight.prf)).toFixed(2)}\n`;
+        text += `Fare Refundable/Non-refundable: ${quotation.returnFlight.refundable ? 'Refundable' : 'Non-Refundable'}\n`;
+  
+        // Via Flight in Return (if any)
+        if (quotation.returnFlight.via && quotation.returnFlight.via.arrivalTo) {
+          text += `\nReturn Via Flight Details:\n`;
+          text += `Return Via Flight Number: ${quotation.returnFlight.via.FlightNumber}\n`;
+          text += `Return Via Departure Airport: ${quotation.returnFlight.via.departureFrom}\n`;
+          text += `Return Via Arrival Airport: ${quotation.returnFlight.via.arrivalTo}\n`;
+        }
+      }
+  
+      return text;
+    };
+  
+    // Generate text for Main Data
+    copyData += generateQuotationText(data, 0);
+  
+    // Generate text for Duplicates
+    if (duplicate && duplicate.length > 0) {
+      duplicate.forEach((item, index) => {
+        copyData += `\n\n`;  // Separate each quotation with a line break
+        copyData += generateQuotationText(item, index + 1);
+      });
+    }
+  
+    // Copy the compiled text to the clipboard
     window.navigator.clipboard.writeText(copyData)
-    handleSave()
-  }
+      .then(() => {
+        console.log('Copied to clipboard successfully!');
+        handleSave();
+      })
+      .catch((err) => {
+        console.error('Failed to copy:', err);
+      });
+  };
+  
   const dispatch = useDispatch();
   const q = useSelector(state => state.query);
   const navigate = useNavigate();
@@ -39,22 +106,21 @@ export default function EditTableFlightQuery({ isOpen, onClose, data, returnData
 
           <ModalCloseButton onClose={onClose} />
           <ModalBody overflowX={'scroll'}>
-            <Typography component="div" className='my-2' style={{display: 'flex', justifyContent: 'space-between'}}>
-              <Typography>
-                {(duplicate && totalFlightTicket > 0) && 
-                  <Typography className="text-xl font-semibold text-black my-1">
-                    Quotation1
-                  </Typography>}
-                {((data?.oneWayOrRoundway === 'Round Way' || data?.OneWayOrRoundTrip === 'Round Way') && data?.flightType) &&
-                  <Typography className="text-xl font-semibold text-black">
-                    Onward
-                  </Typography>
-                }
-              </Typography>
-            </Typography>
+            <div className='my-2' style={{display: 'flex', justifyContent: 'space-between'}}>
+              {(duplicate && totalFlightTicket > 0) && 
+                <Typography variant='h2' className="text-xl font-semibold text-black my-1">
+                  Quotation1
+                </Typography>}
+              {((data?.oneWayOrRoundway === 'Round Way' || data?.OneWayOrRoundTrip === 'Round Way') && data?.flightType) &&
+                <Typography variant='h3' className="text-xl font-semibold text-black">
+                  Onward
+                </Typography>
+              }
+            </div>
             
             {data?.flightType && 
-            <Table variant='simple' >
+            <Table variant='simple'>
+              <Thead>
               <Tr bgColor={'#db2778'} textColor={'white'} gap={0}>
                 <Td borderRightColor={'white'} borderRightWidth={0.5}>Airline Name</Td>
                 <Td borderRightColor={'white'} borderRightWidth={0.5}>Flight Number</Td>
@@ -65,6 +131,8 @@ export default function EditTableFlightQuery({ isOpen, onClose, data, returnData
                 <Td borderRightColor={'white'} borderRightWidth={0.5}>Total Cost</Td>
                 <Td borderRightColor={'white'} borderRightWidth={0.5}>Fare refundable/Non-refundable</Td>
               </Tr>
+              </Thead>
+              <Tbody>
               <Tr>
                 <Td>{data?.airlineNames}</Td>
                 <Td>{data?.FlightNumber}</Td>
@@ -87,6 +155,7 @@ export default function EditTableFlightQuery({ isOpen, onClose, data, returnData
                   <Td>{data?.refundable ? 'Refundable' : 'Non-Refundable'}</Td>
                 </Tr>
               )}
+              </Tbody>
             </Table>
             }
 
@@ -138,18 +207,16 @@ export default function EditTableFlightQuery({ isOpen, onClose, data, returnData
               {((duplicate && totalFlightTicket > 0)) && <>
                 {duplicate.length > 0 && duplicate.map((item, index) => (
                   <>
-                  <Typography component="div" className='my-2' style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <Typography>
-                      <Typography className="text-xl font-semibold text-black">
-                        Quotation{index+2}
-                      </Typography>
-                      {((data?.oneWayOrRoundway === 'Round Way' || data?.OneWayOrRoundTrip === 'Round Way') && item?.flightType) &&
-                        <Typography className="text-xl font-semibold text-black mt-2">
-                          Onward
-                        </Typography>
-                      }
+                  <div className='my-2' style={{display: 'flex', justifyContent: 'space-between'}}>
+                    <Typography variant='h2' className="text-xl font-semibold text-black">
+                      Quotation{index+2}
                     </Typography>
-                  </Typography>
+                    {((data?.oneWayOrRoundway === 'Round Way' || data?.OneWayOrRoundTrip === 'Round Way') && item?.flightType) &&
+                      <Typography variant='h3' className="text-xl font-semibold text-black mt-2">
+                        Onward
+                      </Typography>
+                    }
+                  </div>
 
                   {item?.flightType && 
                   <Table variant='simple' >
@@ -190,7 +257,7 @@ export default function EditTableFlightQuery({ isOpen, onClose, data, returnData
                   {((data?.oneWayOrRoundway === 'Round Way' || data?.OneWayOrRoundTrip === 'Round Way') && item.returnFlight?.flightType) &&
                     (
                       <>
-                        <Typography className="text-xl font-semibold text-black">
+                        <Typography variant='h3' className="text-xl font-semibold text-black">
                           Return
                         </Typography>
                         <Table variant='simple' >

@@ -10,7 +10,6 @@ import { GlobalDataProvider } from "./hooks/GlobalData";
 import { Provider as ReduxProvider } from "react-redux";
 import { HelmetProvider } from "react-helmet-async";
 import { store } from "./redux/store.js";
-
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
